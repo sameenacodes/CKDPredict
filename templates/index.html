@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>CKDPredict — Prediction Form</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --teal: #0d9488; --teal-dk: #0f766e; --teal-lt: #f0fdfa;
+      --teal-md: #ccfbf1; --border: #e2e8f0; --text: #0f172a;
+      --muted: #64748b; --bg: #f1f5f9; --white: #ffffff;
+    }
+    body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+    nav {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 2rem; height: 60px; background: var(--white);
+      border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 100;
+    }
+    .logo { display: flex; align-items: center; gap: .5rem; text-decoration: none; }
+    .logo-icon { width: 32px; height: 32px; border-radius: 50%; background: var(--teal); display: grid; place-items: center; font-size: .9rem; }
+    .logo-text { font-size: 1rem; font-weight: 700; color: var(--text); }
+    .logo-text span { color: var(--teal); }
+    .nav-back { color: var(--muted); font-size: .88rem; font-weight: 500; text-decoration: none; }
+    .nav-back:hover { color: var(--text); }
+    .page-header { text-align: center; padding: 2rem 1rem 1rem; }
+    .page-header h1 { font-size: 1.8rem; font-weight: 800; margin-bottom: .3rem; }
+    .page-header p { color: var(--muted); font-size: .88rem; }
+    .card-wrap { max-width: 860px; margin: 0 auto; padding: 0 1.5rem 3rem; }
+    .card { background: var(--white); border: 1px solid var(--border); border-radius: 20px; overflow: hidden; box-shadow: 0 2px 16px rgba(0,0,0,.05); }
+    .tabs { display: flex; gap: .5rem; padding: 1.2rem 1.5rem .8rem; flex-wrap: wrap; border-bottom: 1px solid var(--border); }
+    .tab {
+      display: flex; align-items: center; gap: .35rem;
+      padding: .45rem 1rem; border-radius: 999px;
+      border: 1.5px solid var(--border);
+      font-size: .82rem; font-weight: 500; cursor: pointer;
+      background: var(--white); color: var(--muted);
+      font-family: 'Inter', sans-serif; transition: all .2s;
+    }
+    .tab:hover { border-color: var(--teal); color: var(--teal); }
+    .tab.active { background: var(--teal); color: #fff; border-color: var(--teal); }
+    .section { display: none; padding: 1.5rem; }
+    .section.active { display: block; animation: fadeIn .2s ease; }
+    @keyframes fadeIn { from{opacity:0;transform:translateY(6px)} to{opacity:1;transform:translateY(0)} }
+    .fields { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.2rem; }
+    @media(max-width:700px){ .fields{ grid-template-columns:1fr; } }
+    @media(min-width:701px) and (max-width:900px){ .fields{ grid-template-columns:repeat(2,1fr); } }
+    .field { display: flex; flex-direction: column; gap: .4rem; }
+    .field label { font-size: .83rem; font-weight: 600; color: var(--text); }
+    .field label .norm { color: var(--teal); font-size: .72rem; font-weight: 500; margin-left: .3rem; }
+    .field input, .field select {
+      border: 1.5px solid var(--border); border-radius: 10px;
+      padding: .6rem .85rem; font-size: .88rem;
+      font-family: 'Inter', sans-serif; color: var(--text);
+      background: var(--white); outline: none; appearance: none; width: 100%;
+      transition: border-color .2s, box-shadow .2s;
+    }
+    .field input:focus, .field select:focus { border-color: var(--teal); box-shadow: 0 0 0 3px rgba(13,148,136,.1); }
+    .field .hint { font-size: .73rem; color: var(--muted); }
+    .sel-wrap { position: relative; }
+    .sel-wrap::after { content:'▾'; position:absolute; right:.85rem; top:50%; transform:translateY(-50%); color:var(--muted); pointer-events:none; font-size:.75rem; }
+    .sel-wrap select { padding-right:2rem; cursor:pointer; }
+    .form-footer {
+      display: flex; justify-content: flex-end; align-items: center; gap: 1rem;
+      padding: 1rem 1.5rem 1.5rem; border-top: 1px solid var(--border);
+    }
+    .btn-reset {
+      padding: .6rem 1.3rem; border-radius: 10px;
+      border: 1.5px solid var(--border); background: var(--white);
+      color: var(--text); font-size: .86rem; font-weight: 500;
+      font-family: 'Inter',sans-serif; cursor: pointer; transition: all .2s;
+    }
+    .btn-reset:hover { border-color: var(--teal); color: var(--teal); }
+    .btn-predict {
+      display: flex; align-items: center; gap: .5rem;
+      padding: .65rem 1.8rem; background: var(--teal); color: #fff;
+      border: none; border-radius: 10px;
+      font-size: .9rem; font-weight: 600; font-family: 'Inter',sans-serif;
+      cursor: pointer; transition: all .2s;
+      box-shadow: 0 3px 12px rgba(13,148,136,.25);
+    }
+    .btn-predict:hover { background: var(--teal-dk); }
+    .about-wrap { max-width: 860px; margin: 1rem auto 0; padding: 0 1.5rem 3rem; }
+    .about-card { background: var(--white); border: 1px solid var(--border); border-radius: 14px; padding: 1.2rem 1.5rem; }
+    .about-card h3 { font-size: .9rem; font-weight: 700; margin-bottom: .8rem; }
+    .about-card ul { list-style: none; display: flex; flex-direction: column; gap: .5rem; }
+    .about-card li { display: flex; align-items: flex-start; gap: .5rem; font-size: .83rem; color: var(--muted); }
+    .about-card li::before { content:'●'; color:var(--teal); font-size:.55rem; margin-top:.3rem; flex-shrink:0; }
+  </style>
+</head>
+<body>
+
+<nav>
+  <a class="logo" href="/"><div class="logo-icon">🫘</div><span class="logo-text">CKD<span>Predict</span></span></a>
+  <a class="nav-back" href="/">← Back to Home</a>
+</nav>
+
+<div class="page-header">
+  <h1>CKD Risk Prediction</h1>
+  <p>Enter patient clinical data for comprehensive kidney disease risk assessment</p>
+</div>
+
+<div class="card-wrap">
+  <div class="card">
+    <div class="tabs">
+      <button type="button" class="tab active" onclick="switchTab(0)" id="tab-0">👤 Demographics</button>
+      <button type="button" class="tab" onclick="switchTab(1)" id="tab-1">❤️ Vital Signs</button>
+      <button type="button" class="tab" onclick="switchTab(2)" id="tab-2">🧪 Urine Analysis</button>
+      <button type="button" class="tab" onclick="switchTab(3)" id="tab-3">🩸 Blood Chemistry</button>
+      <button type="button" class="tab" onclick="switchTab(4)" id="tab-4">🔬 Blood Cell Counts</button>
+      <button type="button" class="tab" onclick="switchTab(5)" id="tab-5">📋 Medical History</button>
+    </div>
+
+    <!-- PLAIN HTML FORM — submits directly to /predict via POST -->
+    <form method="POST" action="/predict">
+
+      <!-- TAB 0: DEMOGRAPHICS -->
+      <div class="section active" id="sec-0">
+        <div class="fields" style="grid-template-columns:1fr;max-width:280px">
+          <div class="field">
+            <label>Age (years) <span class="norm">Normal: N/A</span></label>
+            <input type="number" name="age" value="50" min="1" max="120"/>
+            <span class="hint">Patient age in years</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB 1: VITAL SIGNS -->
+      <div class="section" id="sec-1">
+        <div class="fields" style="grid-template-columns:1fr;max-width:280px">
+          <div class="field">
+            <label>Blood Pressure (mm/Hg) <span class="norm">Normal: 80-120</span></label>
+            <input type="number" name="bp" value="80" min="50" max="200"/>
+            <span class="hint">Diastolic blood pressure</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB 2: URINE ANALYSIS -->
+      <div class="section" id="sec-2">
+        <div class="fields">
+          <div class="field">
+            <label>Specific Gravity <span class="norm">Normal: 1.010-1.025</span></label>
+            <input type="number" name="sg" step="0.001" value="1.020" min="1.000" max="1.030"/>
+            <span class="hint">Urine specific gravity</span>
+          </div>
+          <div class="field">
+            <label>Albumin <span class="norm">Normal: 0-1</span></label>
+            <input type="number" name="al" value="0" min="0" max="5"/>
+            <span class="hint">Albumin in urine (0-5 scale)</span>
+          </div>
+          <div class="field">
+            <label>Sugar <span class="norm">Normal: 0</span></label>
+            <input type="number" name="su" value="0" min="0" max="5"/>
+            <span class="hint">Sugar in urine (0-5 scale)</span>
+          </div>
+          <div class="field">
+            <label>Red Blood Cells <span class="norm">Normal: Normal</span></label>
+            <div class="sel-wrap">
+              <select name="rbc">
+                <option value="normal" selected>Normal</option>
+                <option value="abnormal">Abnormal</option>
+              </select>
+            </div>
+            <span class="hint">RBC in urine examination</span>
+          </div>
+          <div class="field">
+            <label>Pus Cell <span class="norm">Normal: Normal</span></label>
+            <div class="sel-wrap">
+              <select name="pc">
+                <option value="normal" selected>Normal</option>
+                <option value="abnormal">Abnormal</option>
+              </select>
+            </div>
+            <span class="hint">Pus cells in urine</span>
+          </div>
+          <div class="field">
+            <label>Pus Cell Clumps <span class="norm">Normal: Not Present</span></label>
+            <div class="sel-wrap">
+              <select name="pcc">
+                <option value="notpresent" selected>Not Present</option>
+                <option value="present">Present</option>
+              </select>
+            </div>
+            <span class="hint">Pus cell clumps presence</span>
+          </div>
+          <div class="field">
+            <label>Bacteria <span class="norm">Normal: Not Present</span></label>
+            <div class="sel-wrap">
+              <select name="ba">
+                <option value="notpresent" selected>Not Present</option>
+                <option value="present">Present</option>
+              </select>
+            </div>
+            <span class="hint">Bacteria presence in urine</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB 3: BLOOD CHEMISTRY -->
+      <div class="section" id="sec-3">
+        <div class="fields">
+          <div class="field">
+            <label>Blood Glucose Random (mgs/dl) <span class="norm">Normal: 70-140</span></label>
+            <input type="number" name="bgr" value="100" min="50" max="500"/>
+            <span class="hint">Random blood glucose level</span>
+          </div>
+          <div class="field">
+            <label>Blood Urea (mgs/dl) <span class="norm">Normal: 7-20</span></label>
+            <input type="number" name="bu" value="40" min="1" max="400"/>
+            <span class="hint">Blood urea nitrogen level</span>
+          </div>
+          <div class="field">
+            <label>Serum Creatinine (mgs/dl) <span class="norm">Normal: 0.7-1.2</span></label>
+            <input type="number" name="sc" step="0.1" value="1" min="0.1" max="20"/>
+            <span class="hint">Key CKD indicator</span>
+          </div>
+          <div class="field">
+            <label>Sodium (mEq/L) <span class="norm">Normal: 135-145</span></label>
+            <input type="number" name="sod" value="140" min="100" max="170"/>
+            <span class="hint">Blood sodium level</span>
+          </div>
+          <div class="field">
+            <label>Potassium (mEq/L) <span class="norm">Normal: 3.5-5.0</span></label>
+            <input type="number" name="pot" step="0.1" value="4" min="1" max="10"/>
+            <span class="hint">Blood potassium level</span>
+          </div>
+          <div class="field">
+            <label>Hemoglobin (gms) <span class="norm">Normal: 12-17</span></label>
+            <input type="number" name="hemo" step="0.1" value="14" min="1" max="20"/>
+            <span class="hint">Blood hemoglobin level</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB 4: BLOOD CELL COUNTS -->
+      <div class="section" id="sec-4">
+        <div class="fields">
+          <div class="field">
+            <label>Packed Cell Volume <span class="norm">Normal: 36-48</span></label>
+            <input type="number" name="pcv" value="42" min="10" max="60"/>
+            <span class="hint">Percentage of blood volume occupied by RBCs</span>
+          </div>
+          <div class="field">
+            <label>White Blood Cell Count (cells/cumm) <span class="norm">Normal: 4000-11000</span></label>
+            <input type="number" name="wc" value="7500" min="1000" max="30000"/>
+            <span class="hint">Total white blood cell count</span>
+          </div>
+          <div class="field">
+            <label>Red Blood Cell Count (millions/cmm) <span class="norm">Normal: 4.5-5.5</span></label>
+            <input type="number" name="rc" step="0.1" value="5" min="1" max="8"/>
+            <span class="hint">Total red blood cell count</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB 5: MEDICAL HISTORY -->
+      <div class="section" id="sec-5">
+        <div class="fields">
+          <div class="field">
+            <label>Hypertension <span class="norm">Normal: No</span></label>
+            <div class="sel-wrap">
+              <select name="htn">
+                <option value="no" selected>No</option>
+                <option value="yes">Yes</option>
+              </select>
+            </div>
+            <span class="hint">History of high blood pressure</span>
+          </div>
+          <div class="field">
+            <label>Diabetes Mellitus <span class="norm">Normal: No</span></label>
+            <div class="sel-wrap">
+              <select name="dm">
+                <option value="no" selected>No</option>
+                <option value="yes">Yes</option>
+              </select>
+            </div>
+            <span class="hint">History of diabetes</span>
+          </div>
+          <div class="field">
+            <label>Coronary Artery Disease <span class="norm">Normal: No</span></label>
+            <div class="sel-wrap">
+              <select name="cad">
+                <option value="no" selected>No</option>
+                <option value="yes">Yes</option>
+              </select>
+            </div>
+            <span class="hint">History of heart disease</span>
+          </div>
+          <div class="field">
+            <label>Appetite <span class="norm">Normal: Good</span></label>
+            <div class="sel-wrap">
+              <select name="appet">
+                <option value="good" selected>Good</option>
+                <option value="poor">Poor</option>
+              </select>
+            </div>
+            <span class="hint">Patient appetite status</span>
+          </div>
+          <div class="field">
+            <label>Pedal Edema <span class="norm">Normal: No</span></label>
+            <div class="sel-wrap">
+              <select name="pe">
+                <option value="no" selected>No</option>
+                <option value="yes">Yes</option>
+              </select>
+            </div>
+            <span class="hint">Swelling in feet/legs</span>
+          </div>
+          <div class="field">
+            <label>Anemia <span class="norm">Normal: No</span></label>
+            <div class="sel-wrap">
+              <select name="ane">
+                <option value="no" selected>No</option>
+                <option value="yes">Yes</option>
+              </select>
+            </div>
+            <span class="hint">Low hemoglobin condition</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-footer">
+        <button type="button" class="btn-reset" onclick="resetForm()">↺ Reset</button>
+        <button type="submit" class="btn-predict">⚡ Get Prediction</button>
+      </div>
+
+    </form>
+  </div>
+</div>
+
+<div class="about-wrap">
+  <div class="about-card">
+    <h3>About This Prediction</h3>
+    <ul>
+      <li>Based on UCI Machine Learning Repository CKD Dataset (400 patients)</li>
+      <li>Uses Random Forest Classifier with 100% accuracy on test data</li>
+      <li>8 key clinical parameters identified through feature importance analysis</li>
+      <li>Not a substitute for professional medical diagnosis</li>
+    </ul>
+  </div>
+</div>
+
+<script>
+  function switchTab(n) {
+    document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    document.getElementById('sec-' + n).classList.add('active');
+    document.getElementById('tab-' + n).classList.add('active');
+  }
+  function resetForm() {
+    const nums = {age:50,bp:80,sg:1.020,al:0,su:0,bgr:100,bu:40,sc:1,sod:140,pot:4,hemo:14,pcv:42,wc:7500,rc:5};
+    Object.entries(nums).forEach(([k,v]) => { const el = document.querySelector('[name='+k+']'); if(el) el.value=v; });
+    ['rbc','pc','pcc','ba','htn','dm','cad','appet','pe','ane'].forEach(k => { const el = document.querySelector('[name='+k+']'); if(el) el.selectedIndex=0; });
+  }
+</script>
+</body>
+</html>

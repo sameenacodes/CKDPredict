@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>CSV Results</title>
+<style>
+body{text-align:center;font-family:Poppins;background:#f2f7ff;}
+.data{margin:auto;border-collapse:collapse;}
+.data th, .data td{padding:8px;border:1px solid #555;}
+</style>
+</head>
+<body>
+
+<h1>CSV Prediction Results</h1>
+
+<h3>First 5 Rows</h3>
+{{ tables|safe }}
+
+<h3>Predictions (first 10)</h3>
+<p>{{ pred }}</p>
+
+</body>
+</html>
