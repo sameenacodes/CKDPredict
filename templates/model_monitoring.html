@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Model Monitoring Center | CKD Prediction System</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+*{box-sizing:border-box;font-family:Arial,Helvetica,sans-serif}
+body{margin:0;background:#f4f4f4;color:#222}
+.header{background:#111;color:#fff;padding:22px 7%;display:flex;justify-content:space-between;align-items:center}
+.header h1{margin:0;font-size:25px}.header p{margin:6px 0 0;color:#ccc}
+.nav a{display:inline-block;background:#fff;color:#111;text-decoration:none;padding:10px 15px;border-radius:5px;font-weight:bold;margin-left:8px}
+.container{width:90%;max-width:1250px;margin:30px auto}
+.card{background:#fff;border:1px solid #ccc;border-radius:8px;padding:24px;margin-bottom:22px;box-shadow:0 2px 8px rgba(0,0,0,.08)}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:16px}
+.metric{border:1px solid #ccc;border-radius:7px;padding:18px;background:#fafafa}
+.metric h3{font-size:13px;color:#555;margin:0 0 10px}.value{font-size:28px;font-weight:bold}.sub{font-size:13px;color:#666;margin-top:8px}
+.chart-wrap{height:320px;position:relative}
+table{width:100%;border-collapse:collapse}
+th,td{border:1px solid #ddd;padding:11px;text-align:left}
+th{background:#111;color:#fff}tr:nth-child(even){background:#fafafa}
+.notice{border-left:4px solid #111;padding:16px;line-height:1.6;background:#fff}
+.badge{display:inline-block;border:1px solid #111;border-radius:4px;padding:5px 9px;font-size:12px;font-weight:bold}
+@media(max-width:700px){.header{flex-direction:column;align-items:flex-start}.nav a{margin:8px 5px 0 0}.chart-wrap{height:250px}}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div>
+    <h1>CKD Prediction System</h1>
+    <p>Phase 9 — Prediction Audit & Model Monitoring Center</p>
+  </div>
+  <div class="nav">
+    <a href="/dashboard">Patient History</a>
+    <a href="/model-validation">Model Validation</a>
+    <a href="/predict-page">New Prediction</a>
+  </div>
+</div>
+
+<div class="container">
+
+  <div class="card">
+    <h2>Prediction Audit Overview</h2>
+    <p>This dashboard monitors how the deployed decision-support system is being used and summarizes recorded professional review outcomes.</p>
+
+    <div class="grid">
+      <div class="metric">
+        <h3>TOTAL PREDICTIONS</h3>
+        <div class="value">{{ metrics.total }}</div>
+      </div>
+      <div class="metric">
+        <h3>CKD DETECTED</h3>
+        <div class="value">{{ metrics.ckd_count }}</div>
+      </div>
+      <div class="metric">
+        <h3>NO CKD</h3>
+        <div class="value">{{ metrics.non_ckd_count }}</div>
+      </div>
+      <div class="metric">
+        <h3>AVERAGE MODEL CONFIDENCE</h3>
+        <div class="value">{{ metrics.average_confidence }}%</div>
+      </div>
+      <div class="metric">
+        <h3>PROFESSIONAL REVIEWS</h3>
+        <div class="value">{{ metrics.reviewed }}</div>
+        <div class="sub">Pending: {{ metrics.pending }}</div>
+      </div>
+      <div class="metric">
+        <h3>AGREEMENT RATE</h3>
+        <div class="value">{{ metrics.agreement_rate }}%</div>
+        <div class="sub">Based on completed reviews</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="grid">
+    <div class="card">
+      <h2>Prediction Distribution</h2>
+      <div class="chart-wrap"><canvas id="predictionChart"></canvas></div>
+    </div>
+
+    <div class="card">
+      <h2>Professional Review Outcomes</h2>
+      <div class="chart-wrap"><canvas id="reviewChart"></canvas></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Professional Review Audit</h2>
+    <div class="grid">
+      <div class="metric"><h3>AGREE WITH PREDICTION</h3><div class="value">{{ metrics.agree_count }}</div></div>
+      <div class="metric"><h3>DISAGREE WITH PREDICTION</h3><div class="value">{{ metrics.disagree_count }}</div></div>
+      <div class="metric"><h3>FURTHER TESTS REQUIRED</h3><div class="value">{{ metrics.further_test_count }}</div></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Recent Prediction Audit Log</h2>
+    {% if recent_records %}
+    <table>
+      <thead>
+        <tr>
+          <th>Assessment ID</th>
+          <th>Patient</th>
+          <th>Prediction</th>
+          <th>Confidence</th>
+          <th>Date</th>
+          <th>Review Status</th>
+          <th>Review Outcome</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for row in recent_records %}
+        <tr>
+          <td>{{ row.assessment_id }}</td>
+          <td>{{ row.patient_name }}</td>
+          <td>{{ row.prediction }}</td>
+          <td>{{ row.confidence }}%</td>
+          <td>{{ row.assessment_date }}</td>
+          <td><span class="badge">{{ row.review_status or 'Pending Review' }}</span></td>
+          <td>{{ row.doctor_decision or 'Not reviewed yet' }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% else %}
+      <p>No predictions have been recorded yet.</p>
+    {% endif %}
+  </div>
+
+  <div class="notice">
+    <b>Important distinction:</b> Model Validation evaluates offline performance using metrics such as accuracy, precision, recall and F1-score.
+    This Model Monitoring Center is a post-prediction audit layer. It tracks recorded predictions, confidence values and professional review outcomes.
+    The agreement rate represents recorded reviewer agreement and should not be presented as a substitute for a clinically validated accuracy metric.
+  </div>
+
+</div>
+
+<script>
+new Chart(document.getElementById('predictionChart'), {
+    type: 'bar',
+    data: {
+        labels: ['CKD Detected', 'No CKD'],
+        datasets: [{
+            label: 'Predictions',
+            data: [{{ metrics.ckd_count }}, {{ metrics.non_ckd_count }}],
+            borderWidth: 1
+        }]
+    },
+    options: {
+        responsive:true,
+        maintainAspectRatio:false,
+        scales:{y:{beginAtZero:true}}
+    }
+});
+
+new Chart(document.getElementById('reviewChart'), {
+    type: 'bar',
+    data: {
+        labels: ['Agree', 'Disagree', 'Further Tests'],
+        datasets: [{
+            label: 'Review Outcomes',
+            data: [{{ metrics.agree_count }}, {{ metrics.disagree_count }}, {{ metrics.further_test_count }}],
+            borderWidth: 1
+        }]
+    },
+    options: {
+        responsive:true,
+        maintainAspectRatio:false,
+        scales:{y:{beginAtZero:true}}
+    }
+});
+</script>
+
+</body>
+</html>

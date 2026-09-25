@@ -1,545 +1,1597 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>CKDPredict — Result</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+Tamil:wght@400;600;700&family=Noto+Sans+Devanagari:wght@400;600;700&display=swap" rel="stylesheet"/>
-  <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    :root {
-      --teal:#0d9488; --teal-dk:#0f766e; --teal-lt:#f0fdfa; --teal-md:#ccfbf1;
-      --border:#e2e8f0; --text:#0f172a; --muted:#64748b; --bg:#f1f5f9; --white:#ffffff;
-      --green:#16a34a; --green-lt:#dcfce7;
-      --red:#dc2626; --red-lt:#fee2e2;
-      --orange:#ea580c; --orange-lt:#ffedd5;
-      --yellow:#ca8a04; --yellow-lt:#fef9c3;
-      --wa:#25D366;
-    }
-    body { font-family:'Inter',sans-serif; background:var(--bg); color:var(--text); min-height:100vh; }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CKDPredict | Prediction Result</title>
 
-    /* ── LANGUAGE SWITCHER ── */
-    .lang-bar {
-      background: var(--teal); padding:.5rem 2rem;
-      display:flex; align-items:center; justify-content:flex-end; gap:.5rem;
-    }
-    .lang-btn {
-      padding:.3rem .8rem; border-radius:999px; border:1.5px solid rgba(255,255,255,.4);
-      background:transparent; color:rgba(255,255,255,.8);
-      font-size:.78rem; font-weight:600; cursor:pointer;
-      font-family:'Inter',sans-serif; transition:all .2s;
-    }
-    .lang-btn.active { background:#fff; color:var(--teal); border-color:#fff; }
-    .lang-btn:hover  { background:rgba(255,255,255,.2); }
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet"
+    >
 
-    nav {
-      display:flex; align-items:center; justify-content:space-between;
-      padding:0 2rem; height:60px; background:var(--white);
-      border-bottom:1px solid var(--border); position:sticky; top:0; z-index:100;
-    }
-    .logo { display:flex; align-items:center; gap:.5rem; text-decoration:none; }
-    .logo-icon { width:32px; height:32px; border-radius:50%; background:var(--teal); display:grid; place-items:center; font-size:.9rem; }
-    .logo-text { font-size:1rem; font-weight:700; color:var(--text); }
-    .logo-text span { color:var(--teal); }
-    .nav-right { display:flex; align-items:center; gap:.8rem; }
-    .btn-new { color:var(--muted); font-size:.85rem; font-weight:500; text-decoration:none; }
-    .btn-new:hover { color:var(--text); }
-    .btn-pdf { display:flex; align-items:center; gap:.4rem; padding:.5rem 1.2rem; background:var(--teal); color:#fff; border:none; border-radius:8px; font-size:.85rem; font-weight:600; font-family:'Inter',sans-serif; cursor:pointer; transition:all .2s; }
-    .btn-pdf:hover { background:var(--teal-dk); }
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-    /* WhatsApp button */
-    .btn-wa {
-      display:flex; align-items:center; gap:.4rem;
-      padding:.5rem 1.2rem; background:var(--wa); color:#fff;
-      border:none; border-radius:8px; font-size:.85rem; font-weight:600;
-      font-family:'Inter',sans-serif; cursor:pointer; transition:all .2s;
-      text-decoration:none;
-    }
-    .btn-wa:hover { background:#1da851; }
+        :root {
+            --blue: #2563eb;
+            --blue-dark: #1d4ed8;
+            --blue-light: #eff6ff;
+            --blue-soft: #dbeafe;
+            --text: #172033;
+            --muted: #6b7280;
+            --border: #e5e7eb;
+            --bg: #f8fafc;
+            --white: #ffffff;
+            --green: #16a34a;
+            --green-light: #f0fdf4;
+            --red: #dc2626;
+            --red-light: #fef2f2;
+            --orange: #ea580c;
+            --orange-light: #fff7ed;
+            --purple: #7c3aed;
+            --purple-light: #f5f3ff;
+        }
 
-    .wrap { max-width:900px; margin:0 auto; padding:2rem 1.5rem 4rem; display:flex; flex-direction:column; gap:1.2rem; }
+        body {
+            font-family: "Inter", sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+        }
 
-    .result-hero { border-radius:18px; padding:2.5rem; text-align:center; }
-    .result-hero.ckd { background:var(--red-lt); border:1.5px solid #fca5a5; }
-    .result-hero.ok  { background:var(--green-lt); border:1.5px solid #86efac; }
-    .hero-icon { width:64px; height:64px; border-radius:50%; display:grid; place-items:center; font-size:1.8rem; margin:0 auto 1rem; }
-    .ckd .hero-icon { background:#fecaca; }
-    .ok  .hero-icon { background:#bbf7d0; }
-    .result-hero h2 { font-size:1.9rem; font-weight:800; margin-bottom:.4rem; }
-    .ckd h2 { color:#b91c1c; }
-    .ok  h2 { color:#15803d; }
-    .result-hero p { color:var(--muted); font-size:.88rem; }
+        nav {
+            height: 74px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 7%;
+            background: var(--white);
+            border-bottom: 1px solid var(--border);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
 
-    .stats-row { display:grid; grid-template-columns:repeat(3,1fr); gap:1rem; }
-    @media(max-width:600px){ .stats-row{ grid-template-columns:1fr; } }
-    .stat-card { background:var(--white); border:1px solid var(--border); border-radius:14px; padding:1.2rem 1.4rem; }
-    .stat-lbl { font-size:.75rem; color:var(--muted); margin-bottom:.5rem; }
-    .stat-val { font-size:1.7rem; font-weight:800; }
-    .stat-sub { font-size:.73rem; color:var(--muted); margin-top:.2rem; }
-    .v-green{color:#16a34a} .v-red{color:#dc2626} .v-teal{color:var(--teal)} .v-orange{color:#ea580c} .v-yellow{color:#ca8a04}
-    .risk-bar { height:6px; background:#e2e8f0; border-radius:3px; margin-top:.6rem; overflow:hidden; }
-    .risk-fill { height:100%; border-radius:3px; }
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+        }
 
-    .card { background:var(--white); border:1px solid var(--border); border-radius:16px; padding:1.5rem; }
-    .card-title { font-size:.95rem; font-weight:700; margin-bottom:1.2rem; display:flex; align-items:center; gap:.4rem; }
+        .logo-icon {
+            width: 42px;
+            height: 42px;
+            border-radius: 12px;
+            background: var(--blue);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 21px;
+        }
 
-    .stage-grid { display:grid; grid-template-columns:repeat(6,1fr); gap:.5rem; }
-    @media(max-width:600px){ .stage-grid{ grid-template-columns:repeat(3,1fr); } }
-    .stage-box { border-radius:10px; padding:.7rem .5rem; text-align:center; border:2px solid transparent; transition:all .2s; }
-    .stage-box.active { border-color:var(--teal); transform:scale(1.05); box-shadow:0 4px 16px rgba(13,148,136,.2); }
-    .stage-box .s-name { font-size:.72rem; font-weight:700; margin-bottom:.3rem; }
-    .stage-box .s-egfr { font-size:.65rem; color:var(--muted); }
-    .stage-1{background:#dcfce7} .stage-2{background:#d1fae5} .stage-3a{background:#fef9c3}
-    .stage-3b{background:#ffedd5} .stage-4{background:#fee2e2} .stage-5{background:#fecaca}
+        .logo-text {
+            font-size: 20px;
+            font-weight: 800;
+            color: var(--text);
+        }
 
-    .egfr-detail { margin-top:1rem; padding:1rem; background:var(--bg); border-radius:10px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:.5rem; }
-    .egfr-val { font-size:1.8rem; font-weight:800; color:var(--teal); }
+        .logo-text span {
+            color: var(--blue);
+        }
 
-    .timeline-hero { display:flex; align-items:center; gap:1.2rem; flex-wrap:wrap; }
-    .timeline-icon { font-size:2.5rem; }
-    .timeline-text h3 { font-size:1.1rem; font-weight:800; margin-bottom:.3rem; }
-    .timeline-text p { font-size:.85rem; color:var(--muted); }
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
 
-    .risk-meter-bar { height:12px; background:#e2e8f0; border-radius:6px; overflow:hidden; margin:.5rem 0; }
-    .risk-meter-fill { height:100%; border-radius:6px; transition:width 1s ease .3s; }
-    .risk-labels { display:flex; justify-content:space-between; font-size:.7rem; color:var(--muted); }
+        .nav-btn {
+            text-decoration: none;
+            padding: 11px 18px;
+            border-radius: 9px;
+            font-size: 14px;
+            font-weight: 600;
+            transition: 0.2s;
+        }
 
-    .urgency-badge { display:inline-flex; align-items:center; gap:.4rem; padding:.35rem .9rem; border-radius:999px; font-size:.78rem; font-weight:700; margin-top:.8rem; }
-    .urgency-routine{background:#dcfce7;color:#15803d} .urgency-monitor{background:#fef9c3;color:#854d0e}
-    .urgency-soon{background:#ffedd5;color:#9a3412} .urgency-urgent{background:#fee2e2;color:#991b1b}
-    .urgency-critical{background:#fecaca;color:#7f1d1d;animation:pulse 1.5s infinite}
-    @keyframes pulse{0%,100%{opacity:1}50%{opacity:.6}}
+        .btn-outline {
+            border: 1px solid var(--border);
+            color: var(--text);
+            background: white;
+        }
 
-    .rec-list { list-style:none; display:flex; flex-direction:column; gap:.7rem; }
-    .rec-list li { display:flex; align-items:flex-start; gap:.7rem; font-size:.86rem; color:#374151; line-height:1.5; }
-    .rec-num { flex-shrink:0; width:22px; height:22px; border-radius:50%; display:grid; place-items:center; font-size:.7rem; font-weight:700; }
-    .ckd-num{background:#fecaca;color:#b91c1c} .ok-num{background:#bbf7d0;color:#15803d}
+        .btn-outline:hover {
+            border-color: var(--blue);
+            color: var(--blue);
+        }
 
-    .sum-table { width:100%; border-collapse:collapse; }
-    .sum-table tr { border-bottom:1px solid #f1f5f9; }
-    .sum-table tr:last-child { border-bottom:none; }
-    .sum-table td { padding:.6rem .8rem; font-size:.83rem; }
-    .sum-table td:nth-child(odd){color:var(--muted);width:22%}
-    .sum-table td:nth-child(even){font-weight:600;color:var(--text);width:11%}
+        .btn-primary {
+            background: var(--blue);
+            color: white;
+        }
 
-    .report-card { background:var(--white); border:1px solid var(--border); border-radius:16px; padding:1.5rem; }
-    .report-meta p { font-size:.8rem; color:var(--text); margin-bottom:.3rem; }
-    .report-meta .disc { font-size:.73rem; color:var(--muted); margin-top:.4rem; font-style:italic; }
+        .btn-primary:hover {
+            background: var(--blue-dark);
+        }
 
-    /* WHATSAPP SHARE CARD */
-    .wa-card {
-      background: linear-gradient(135deg, #dcfce7 0%, #f0fdf4 100%);
-      border: 1.5px solid #86efac; border-radius:16px; padding:1.5rem;
-      display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:1rem;
-    }
-    .wa-card-text h3 { font-size:.95rem; font-weight:700; color:#15803d; margin-bottom:.3rem; }
-    .wa-card-text p  { font-size:.82rem; color:#166534; }
-    .btn-wa-big {
-      display:flex; align-items:center; gap:.6rem;
-      padding:.75rem 1.8rem; background:var(--wa); color:#fff;
-      border:none; border-radius:12px; font-size:.95rem; font-weight:700;
-      font-family:'Inter',sans-serif; cursor:pointer;
-      box-shadow:0 4px 16px rgba(37,211,102,.3); transition:all .2s;
-      text-decoration:none;
-    }
-    .btn-wa-big:hover { background:#1da851; transform:translateY(-2px); }
+        .container {
+            width: 92%;
+            max-width: 1180px;
+            margin: 0 auto;
+            padding: 45px 0 70px;
+        }
 
-    .actions { display:flex; justify-content:center; gap:1rem; flex-wrap:wrap; }
-    .btn-sec { display:inline-flex; align-items:center; gap:.4rem; padding:.65rem 1.4rem; border:1.5px solid var(--border); background:var(--white); color:var(--text); border-radius:10px; font-size:.86rem; font-weight:500; font-family:'Inter',sans-serif; cursor:pointer; text-decoration:none; transition:all .2s; }
-    .btn-sec:hover { border-color:var(--teal); color:var(--teal); }
-    .btn-pri { display:inline-flex; align-items:center; gap:.4rem; padding:.65rem 1.6rem; background:var(--teal); color:#fff; border:none; border-radius:10px; font-size:.86rem; font-weight:600; font-family:'Inter',sans-serif; cursor:pointer; transition:all .2s; }
-    .btn-pri:hover { background:var(--teal-dk); }
+        .page-title {
+            text-align: center;
+            margin-bottom: 32px;
+        }
 
-    /* Tamil font */
-    .lang-ta { font-family:'Noto Sans Tamil', sans-serif; }
-    .lang-hi { font-family:'Noto Sans Devanagari', sans-serif; }
+        .page-title .small-title {
+            color: var(--blue);
+            font-size: 13px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1.2px;
+            margin-bottom: 10px;
+        }
 
-    @media print { .lang-bar,nav,.actions,.wa-card { display:none!important; } body{background:white;} }
-  </style>
+        .page-title h1 {
+            font-size: 34px;
+            font-weight: 800;
+            margin-bottom: 10px;
+        }
+
+        .page-title p {
+            color: var(--muted);
+            font-size: 15px;
+        }
+
+        .patient-info {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .patient-box {
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 18px;
+        }
+
+        .patient-box label {
+            display: block;
+            font-size: 11px;
+            color: var(--muted);
+            text-transform: uppercase;
+            font-weight: 700;
+            margin-bottom: 7px;
+        }
+
+        .patient-box strong {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--text);
+        }
+
+        .result-card {
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 38px;
+            text-align: center;
+            margin-bottom: 24px;
+            box-shadow: 0 10px 30px rgba(37, 99, 235, 0.06);
+        }
+
+        .result-icon {
+            width: 78px;
+            height: 78px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 18px;
+            font-size: 34px;
+        }
+
+        .result-high .result-icon {
+            background: var(--red-light);
+        }
+
+        .result-low .result-icon {
+            background: var(--green-light);
+        }
+
+        .result-label {
+            font-size: 13px;
+            color: var(--muted);
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .result-card h2 {
+            font-size: 30px;
+            margin: 12px 0;
+            font-weight: 800;
+        }
+
+        .result-high h2 {
+            color: var(--red);
+        }
+
+        .result-low h2 {
+            color: var(--green);
+        }
+
+        .result-card p {
+            color: var(--muted);
+            font-size: 14px;
+            max-width: 600px;
+            margin: auto;
+            line-height: 1.7;
+        }
+
+        .risk-badge {
+            display: inline-flex;
+            margin-top: 18px;
+            padding: 8px 16px;
+            border-radius: 50px;
+            font-size: 13px;
+            font-weight: 700;
+        }
+
+        .risk-high {
+            background: var(--red-light);
+            color: var(--red);
+        }
+
+        .risk-low {
+            background: var(--green-light);
+            color: var(--green);
+        }
+
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 18px;
+            margin-bottom: 24px;
+        }
+
+        .metric-card {
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 24px;
+            text-align: center;
+            transition: 0.2s;
+        }
+
+        .metric-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+        }
+
+        .metric-icon {
+            width: 42px;
+            height: 42px;
+            margin: 0 auto 12px;
+            border-radius: 10px;
+            background: var(--blue-light);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+        }
+
+        .metric-card span {
+            display: block;
+            font-size: 12px;
+            color: var(--muted);
+            font-weight: 700;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+        }
+
+        .metric-card h3 {
+            font-size: 26px;
+            font-weight: 800;
+            color: var(--text);
+        }
+
+        .probability-value {
+            color: var(--purple) !important;
+        }
+
+        .probability-card {
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 18px;
+            padding: 28px;
+            margin-bottom: 24px;
+            box-shadow: 0 8px 25px rgba(124, 58, 237, 0.05);
+        }
+
+        .probability-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 8px;
+        }
+
+        .probability-icon {
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            background: var(--purple-light);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 21px;
+        }
+
+        .probability-header h2 {
+            font-size: 20px;
+            font-weight: 800;
+        }
+
+        .probability-subtitle {
+            color: var(--muted);
+            font-size: 13px;
+            margin-left: 56px;
+            margin-bottom: 22px;
+        }
+
+        .probability-main {
+            display: flex;
+            align-items: center;
+            gap: 25px;
+        }
+
+        .probability-number {
+            min-width: 150px;
+            font-size: 42px;
+            font-weight: 800;
+            color: var(--purple);
+        }
+
+        .probability-bar-container {
+            flex: 1;
+        }
+
+        .probability-track {
+            width: 100%;
+            height: 13px;
+            background: #ede9fe;
+            border-radius: 20px;
+            overflow: hidden;
+            margin-bottom: 9px;
+        }
+
+        .probability-fill {
+            height: 100%;
+            width: {{ ckd_probability|default(0)|float }}%;
+            max-width: 100%;
+            background: var(--purple);
+            border-radius: 20px;
+            transition: width 0.8s ease;
+        }
+
+        .probability-scale {
+            display: flex;
+            justify-content: space-between;
+            font-size: 11px;
+            color: var(--muted);
+        }
+
+        /* =====================================================
+           MODULE 5 — eGFR + GFR STAGE
+        ===================================================== */
+
+        .egfr-card {
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 18px;
+            padding: 28px;
+            margin-bottom: 24px;
+            box-shadow: 0 8px 25px rgba(37, 99, 235, 0.05);
+        }
+
+        .egfr-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+
+        .egfr-icon {
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            background: var(--blue-light);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 21px;
+        }
+
+        .egfr-header h2 {
+            font-size: 20px;
+            font-weight: 800;
+        }
+
+        .egfr-header p {
+            color: var(--muted);
+            font-size: 13px;
+            margin-top: 4px;
+        }
+
+        .egfr-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 18px;
+        }
+
+        .egfr-value-card,
+        .gfr-stage-card {
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 24px;
+            background: #fcfdff;
+            text-align: center;
+        }
+
+        .egfr-label {
+            font-size: 11px;
+            color: var(--muted);
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            margin-bottom: 10px;
+        }
+
+        .egfr-number {
+            font-size: 38px;
+            font-weight: 800;
+            color: var(--blue);
+        }
+
+        .egfr-unit {
+            font-size: 12px;
+            color: var(--muted);
+            margin-top: 4px;
+        }
+
+        .gfr-stage {
+            font-size: 38px;
+            font-weight: 800;
+            color: var(--purple);
+        }
+
+        .gfr-description {
+            font-size: 13px;
+            color: var(--muted);
+            margin-top: 5px;
+        }
+
+        .gfr-scale {
+            margin-top: 22px;
+        }
+
+        .scale-title {
+            font-size: 13px;
+            font-weight: 800;
+            margin-bottom: 12px;
+        }
+
+        .scale-grid {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 10px;
+        }
+
+        .scale-item {
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 12px 8px;
+            text-align: center;
+            background: white;
+        }
+
+        .scale-item strong {
+            display: block;
+            color: var(--blue);
+            font-size: 14px;
+            margin-bottom: 5px;
+        }
+
+        .scale-item span {
+            font-size: 11px;
+            color: var(--muted);
+        }
+
+        .egfr-note {
+            margin-top: 20px;
+            padding: 15px 17px;
+            border-radius: 12px;
+            background: var(--blue-light);
+            border: 1px solid var(--blue-soft);
+            color: #1e3a8a;
+            font-size: 12px;
+            line-height: 1.65;
+        }
+
+        .egfr-note strong {
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        /* =====================================================
+           MODULE 7 — PDF + WHATSAPP
+        ===================================================== */
+
+        .report-card {
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 18px;
+            padding: 28px;
+            margin-bottom: 24px;
+            box-shadow: 0 8px 25px rgba(37, 99, 235, 0.05);
+        }
+
+        .report-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 8px;
+        }
+
+        .report-icon {
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            background: var(--blue-light);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 21px;
+        }
+
+        .report-header h2 {
+            font-size: 20px;
+            font-weight: 800;
+        }
+
+        .report-subtitle {
+            color: var(--muted);
+            font-size: 13px;
+            margin-left: 56px;
+            margin-bottom: 22px;
+            line-height: 1.6;
+        }
+
+        .report-actions {
+            display: flex;
+            justify-content: center;
+            gap: 14px;
+            flex-wrap: wrap;
+        }
+
+        .report-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            text-decoration: none;
+            padding: 13px 20px;
+            border-radius: 10px;
+            background: var(--blue);
+            color: white;
+            font-size: 14px;
+            font-weight: 700;
+            transition: 0.2s;
+        }
+
+        .report-btn:hover {
+            background: var(--blue-dark);
+            transform: translateY(-1px);
+        }
+
+        .whatsapp-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            text-decoration: none;
+            padding: 13px 20px;
+            border-radius: 10px;
+            background: #16a34a;
+            color: white;
+            font-size: 14px;
+            font-weight: 700;
+            transition: 0.2s;
+        }
+
+        .whatsapp-btn:hover {
+            background: #15803d;
+            transform: translateY(-1px);
+        }
+
+        .report-help {
+            margin-top: 14px;
+            color: var(--muted);
+            text-align: center;
+            font-size: 12px;
+            line-height: 1.6;
+        }
+
+        .section-card {
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 18px;
+            padding: 28px;
+            margin-bottom: 24px;
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 22px;
+        }
+
+        .section-icon {
+            width: 42px;
+            height: 42px;
+            border-radius: 10px;
+            background: var(--blue-light);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+        }
+
+        .section-header h2 {
+            font-size: 20px;
+            font-weight: 800;
+        }
+
+        .section-header p {
+            color: var(--muted);
+            font-size: 13px;
+            margin-top: 4px;
+        }
+
+        .recommendation-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px;
+        }
+
+        .recommendation-card {
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 20px;
+            background: #fcfdff;
+            transition: 0.2s;
+        }
+
+        .recommendation-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.04);
+        }
+
+        .recommendation-top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            margin-bottom: 12px;
+        }
+
+        .recommendation-icon {
+            width: 38px;
+            height: 38px;
+            border-radius: 10px;
+            background: var(--blue-light);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+        }
+
+        .priority-badge {
+            padding: 5px 9px;
+            border-radius: 20px;
+            font-size: 10px;
+            font-weight: 800;
+            text-transform: uppercase;
+            background: var(--blue-light);
+            color: var(--blue);
+        }
+
+        .recommendation-card h3 {
+            font-size: 15px;
+            font-weight: 800;
+            margin-bottom: 8px;
+        }
+
+        .recommendation-card p {
+            color: var(--muted);
+            font-size: 13px;
+            line-height: 1.65;
+        }
+
+        .warning-box {
+            margin-top: 18px;
+            padding: 16px 18px;
+            border-radius: 12px;
+            background: var(--orange-light);
+            border: 1px solid #fed7aa;
+            color: #9a3412;
+            font-size: 13px;
+            line-height: 1.6;
+        }
+
+        .warning-box strong {
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .xai-card {
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 18px;
+            padding: 28px;
+            margin-bottom: 24px;
+            box-shadow: 0 8px 25px rgba(37, 99, 235, 0.04);
+        }
+
+        .xai-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 8px;
+        }
+
+        .xai-icon {
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            background: var(--blue-light);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 21px;
+        }
+
+        .xai-header h2 {
+            font-size: 20px;
+            font-weight: 800;
+        }
+
+        .xai-subtitle {
+            color: var(--muted);
+            font-size: 13px;
+            margin-left: 56px;
+            margin-bottom: 24px;
+        }
+
+        .factor {
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 18px;
+            margin-bottom: 14px;
+            background: #fcfdff;
+        }
+
+        .factor:last-child {
+            margin-bottom: 0;
+        }
+
+        .factor-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 9px;
+        }
+
+        .factor-name {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--text);
+        }
+
+        .factor-score {
+            font-size: 13px;
+            font-weight: 800;
+            color: var(--blue);
+        }
+
+        .progress-track {
+            width: 100%;
+            height: 8px;
+            background: #e5e7eb;
+            border-radius: 20px;
+            overflow: hidden;
+            margin-bottom: 12px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: var(--blue);
+            border-radius: 20px;
+            transition: width 0.6s ease;
+        }
+
+        .factor-value {
+            display: inline-block;
+            background: var(--blue-light);
+            color: #1e40af;
+            padding: 5px 9px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .factor-message {
+            color: var(--muted);
+            font-size: 13px;
+            line-height: 1.6;
+        }
+
+        .xai-disclaimer {
+            margin-top: 18px;
+            padding: 14px 16px;
+            border-radius: 10px;
+            background: var(--orange-light);
+            border: 1px solid #fed7aa;
+            color: #9a3412;
+            font-size: 12px;
+            line-height: 1.6;
+        }
+
+        .xai-disclaimer strong {
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+        }
+
+        .feature-card {
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 18px;
+            background: #fcfdff;
+        }
+
+        .feature-card label {
+            font-size: 12px;
+            color: var(--muted);
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+
+        .feature-card .value {
+            font-size: 22px;
+            font-weight: 800;
+            color: var(--text);
+        }
+
+        .clinical-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+        }
+
+        .clinical-item {
+            padding: 18px;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+        }
+
+        .clinical-item h4 {
+            font-size: 12px;
+            color: var(--muted);
+            margin-bottom: 10px;
+        }
+
+        .clinical-status {
+            font-size: 18px;
+            font-weight: 800;
+            text-transform: capitalize;
+        }
+
+        .notice {
+            background: var(--blue-light);
+            border: 1px solid var(--blue-soft);
+            border-radius: 14px;
+            padding: 20px;
+            color: #1e3a8a;
+            font-size: 14px;
+            line-height: 1.7;
+            margin-bottom: 24px;
+        }
+
+        .notice strong {
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .actions {
+            display: flex;
+            justify-content: center;
+            gap: 14px;
+            margin-top: 28px;
+            flex-wrap: wrap;
+        }
+
+        .action-btn {
+            text-decoration: none;
+            padding: 14px 24px;
+            border-radius: 10px;
+            font-weight: 700;
+            font-size: 14px;
+            transition: 0.2s;
+        }
+
+        .action-primary {
+            background: var(--blue);
+            color: white;
+        }
+
+        .action-primary:hover {
+            background: var(--blue-dark);
+        }
+
+        .action-outline {
+            border: 1px solid var(--border);
+            color: var(--text);
+            background: white;
+        }
+
+        .action-outline:hover {
+            border-color: var(--blue);
+            color: var(--blue);
+        }
+
+        .action-trend {
+            background: var(--purple-light);
+            color: var(--purple);
+            border: 1px solid #ddd6fe;
+        }
+
+        .action-trend:hover {
+            background: #ede9fe;
+        }
+
+        footer {
+            text-align: center;
+            padding: 30px;
+            color: var(--muted);
+            font-size: 13px;
+            border-top: 1px solid var(--border);
+            background: white;
+        }
+
+        @media (max-width: 1000px) {
+            .metrics-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .feature-grid,
+            .clinical-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .scale-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        @media (max-width: 900px) {
+            .recommendation-grid,
+            .patient-info {
+                grid-template-columns: 1fr;
+            }
+
+            .probability-main {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .probability-number {
+                min-width: auto;
+                text-align: center;
+            }
+
+            .egfr-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 650px) {
+            nav {
+                padding: 0 5%;
+            }
+
+            .nav-links {
+                gap: 6px;
+            }
+
+            .nav-btn {
+                padding: 9px 11px;
+                font-size: 12px;
+            }
+
+            .logo-text {
+                font-size: 17px;
+            }
+
+            .container {
+                padding-top: 30px;
+            }
+
+            .page-title h1 {
+                font-size: 27px;
+            }
+
+            .result-card {
+                padding: 28px 18px;
+            }
+
+            .result-card h2 {
+                font-size: 24px;
+            }
+
+            .metrics-grid,
+            .feature-grid,
+            .clinical-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .section-card,
+            .xai-card,
+            .probability-card,
+            .egfr-card,
+            .report-card {
+                padding: 20px;
+            }
+
+            .xai-subtitle,
+            .report-subtitle {
+                margin-left: 0;
+                margin-top: 8px;
+            }
+
+            .scale-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .egfr-number,
+            .gfr-stage {
+                font-size: 32px;
+            }
+
+            .report-actions {
+                flex-direction: column;
+            }
+
+            .report-btn,
+            .whatsapp-btn {
+                width: 100%;
+            }
+        }
+    </style>
 </head>
+
 <body>
 
-{% set is_ckd = is_ckd %}
-
-<!-- ═══ LANGUAGE BAR ═══ -->
-<div class="lang-bar">
-  <span style="color:rgba(255,255,255,.7);font-size:.78rem;margin-right:.5rem">🌍 Language:</span>
-  <button class="lang-btn active" onclick="setLang('en')" id="btn-en">English</button>
-  <button class="lang-btn" onclick="setLang('ta')" id="btn-ta">தமிழ்</button>
-  <button class="lang-btn" onclick="setLang('hi')" id="btn-hi">हिंदी</button>
-</div>
-
-<!-- ═══ NAV ═══ -->
 <nav>
-  <a class="logo" href="/"><div class="logo-icon">🫘</div><span class="logo-text">CKD<span>Predict</span></span></a>
-  <div class="nav-right">
-    <a class="btn-new" href="/predict-page" data-en="↺ New Prediction" data-ta="↺ புதிய கணிப்பு" data-hi="↺ नई भविष्यवाणी">↺ New Prediction</a>
-    <button class="btn-pdf" onclick="window.print()">
-      <span data-en="⬇ Download PDF" data-ta="⬇ PDF பதிவிறக்கு" data-hi="⬇ PDF डाउनलोड">⬇ Download PDF</span>
-    </button>
-    <a class="btn-wa" id="waNavBtn" href="#" onclick="shareWhatsApp(); return false;">
-      <span>📱</span>
-      <span data-en="Share" data-ta="பகிர்" data-hi="शेयर">Share</span>
+    <a href="{{ url_for('home') }}" class="logo">
+        <div class="logo-icon">🩺</div>
+        <div class="logo-text">CKD<span>Predict</span></div>
     </a>
-  </div>
+
+    <div class="nav-links">
+        <a href="{{ url_for('home') }}" class="nav-btn btn-outline">Home</a>
+        <a href="{{ url_for('predict') }}" class="nav-btn btn-primary">New Prediction</a>
+    </div>
 </nav>
 
-<div class="wrap">
+<main class="container">
 
-  <!-- 1. RESULT HERO -->
-  <div class="result-hero {% if is_ckd %}ckd{% else %}ok{% endif %}">
-    <div class="hero-icon">{% if is_ckd %}⚠️{% else %}✅{% endif %}</div>
-    <h2 data-en="{{ prediction }}"
-        data-ta="{% if is_ckd %}சிறுநீரக நோய் கண்டறியப்பட்டது{% else %}சிறுநீரக நோய் இல்லை{% endif %}"
-        data-hi="{% if is_ckd %}किडनी रोग पाया गया{% else %}किडनी रोग नहीं मिला{% endif %}">
-      {{ prediction }}
-    </h2>
-    <p data-en="Based on ML analysis of 8 clinical parameters using Random Forest Classifier"
-       data-ta="8 மருத்துவ அளவுருக்களின் ML பகுப்பாய்வின் அடிப்படையில்"
-       data-hi="8 नैदानिक मापदंडों के ML विश्लेषण के आधार पर">
-      Based on ML analysis of 8 clinical parameters using Random Forest Classifier
-    </p>
-  </div>
+    <div class="page-title">
+        <div class="small-title">AI Clinical Decision Support</div>
+        <h1>Kidney Disease Assessment Result</h1>
+        <p>Machine learning based clinical risk assessment</p>
+    </div>
 
-  <!-- eGFR OVERRIDE WARNING -->
-  {% if egfr_override %}
-  <div style="background:#fff3cd;border:1.5px solid #ffc107;border-radius:14px;padding:1rem 1.4rem;display:flex;align-items:flex-start;gap:.8rem;">
-    <span style="font-size:1.4rem">⚠️</span>
-    <div>
-      <div style="font-weight:700;font-size:.9rem;color:#856404;margin-bottom:.3rem"
-           data-en="eGFR Override Applied"
-           data-ta="eGFR மேலெழுத பயன்படுத்தப்பட்டது"
-           data-hi="eGFR ओवरराइड लागू">eGFR Override Applied</div>
-      <div style="font-size:.82rem;color:#664d03;"
-           data-en="ML predicted No CKD, but eGFR = {{ egfr }} confirms {{ stage_info.stage }} by KDIGO guidelines. Consult nephrologist immediately."
-           data-ta="ML 'நோய் இல்லை' என்று கூறியது, ஆனால் eGFR = {{ egfr }} — {{ stage_info.stage }} சிறுநீரக நோயை உறுதிப்படுத்துகிறது. உடனடியாக சிறுநீரக மருத்துவரை அணுகவும்."
-           data-hi="ML ने 'CKD नहीं' कहा, लेकिन eGFR = {{ egfr }} — {{ stage_info.stage }} की पुष्टि करता है। तुरंत नेफ्रोलॉजिस्ट से मिलें।">
-        ML predicted No CKD, but eGFR = {{ egfr }} confirms {{ stage_info.stage }} by KDIGO guidelines. Consult nephrologist immediately.
-      </div>
-    </div>
-  </div>
-  {% endif %}
-
-  <!-- 2. STATS ROW -->
-  <div class="stats-row">
-    <div class="stat-card">
-      <div class="stat-lbl" data-en="📊 Model Confidence" data-ta="📊 மாதிரி நம்பகத்தன்மை" data-hi="📊 मॉडल विश्वास">📊 Model Confidence</div>
-      <div class="stat-val {% if is_ckd %}v-red{% else %}v-green{% endif %}">{{ confidence }}%</div>
-      <div class="stat-sub" data-en="Accuracy: {{ accuracy }}%" data-ta="துல்லியம்: {{ accuracy }}%" data-hi="सटीकता: {{ accuracy }}%">Accuracy: {{ accuracy }}%</div>
-      <div class="risk-bar"><div class="risk-fill" style="width:{{ confidence }}%;background:{% if is_ckd %}#dc2626{% else %}#16a34a{% endif %}"></div></div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-lbl" data-en="🔬 eGFR Value" data-ta="🔬 eGFR மதிப்பு" data-hi="🔬 eGFR मूल्य">🔬 eGFR Value</div>
-      <div class="stat-val v-teal">{% if egfr %}{{ egfr }}{% else %}N/A{% endif %}</div>
-      <div class="stat-sub">mL/min/1.73m²</div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-lbl" data-en="🏥 CKD Stage" data-ta="🏥 நோய் நிலை" data-hi="🏥 CKD चरण">🏥 CKD Stage</div>
-      <div class="stat-val {% if stage_info.color == 'green' %}v-green{% elif stage_info.color == 'yellow' %}v-yellow{% elif stage_info.color == 'orange' %}v-orange{% else %}v-red{% endif %}">{{ stage_info.stage }}</div>
-      <div class="stat-sub">{{ stage_info.label }}</div>
-    </div>
-  </div>
-
-  <!-- 3. eGFR STAGE -->
-  <div class="card">
-    <div class="card-title"
-         data-en="🔬 eGFR-Based CKD Stage Assessment"
-         data-ta="🔬 eGFR அடிப்படையிலான நோய் நிலை மதிப்பீடு"
-         data-hi="🔬 eGFR आधारित CKD चरण मूल्यांकन">🔬 eGFR-Based CKD Stage Assessment</div>
-    <div class="stage-grid">
-      <div class="stage-box stage-1 {% if stage_info.stage == 'Stage 1' %}active{% endif %}">
-        <div class="s-name" data-en="Stage 1" data-ta="நிலை 1" data-hi="चरण 1">Stage 1</div>
-        <div class="s-egfr">≥ 90</div>
-        <div style="font-size:.65rem;margin-top:.2rem;color:#166534" data-en="Normal" data-ta="சாதாரண" data-hi="सामान्य">Normal</div>
-      </div>
-      <div class="stage-box stage-2 {% if stage_info.stage == 'Stage 2' %}active{% endif %}">
-        <div class="s-name" data-en="Stage 2" data-ta="நிலை 2" data-hi="चरण 2">Stage 2</div>
-        <div class="s-egfr">60–89</div>
-        <div style="font-size:.65rem;margin-top:.2rem;color:#166534" data-en="Mild" data-ta="மிதமான" data-hi="हल्का">Mild</div>
-      </div>
-      <div class="stage-box stage-3a {% if stage_info.stage == 'Stage 3A' %}active{% endif %}">
-        <div class="s-name" data-en="Stage 3A" data-ta="நிலை 3A" data-hi="चरण 3A">Stage 3A</div>
-        <div class="s-egfr">45–59</div>
-        <div style="font-size:.65rem;margin-top:.2rem;color:#713f12" data-en="Moderate" data-ta="மிதமான" data-hi="मध्यम">Moderate</div>
-      </div>
-      <div class="stage-box stage-3b {% if stage_info.stage == 'Stage 3B' %}active{% endif %}">
-        <div class="s-name" data-en="Stage 3B" data-ta="நிலை 3B" data-hi="चरण 3B">Stage 3B</div>
-        <div class="s-egfr">30–44</div>
-        <div style="font-size:.65rem;margin-top:.2rem;color:#9a3412" data-en="Mod-Severe" data-ta="மிகவும் கடுமையான" data-hi="गंभीर">Mod-Severe</div>
-      </div>
-      <div class="stage-box stage-4 {% if stage_info.stage == 'Stage 4' %}active{% endif %}">
-        <div class="s-name" data-en="Stage 4" data-ta="நிலை 4" data-hi="चरण 4">Stage 4</div>
-        <div class="s-egfr">15–29</div>
-        <div style="font-size:.65rem;margin-top:.2rem;color:#991b1b" data-en="Severe" data-ta="தீவிர" data-hi="गंभीर">Severe</div>
-      </div>
-      <div class="stage-box stage-5 {% if stage_info.stage == 'Stage 5' %}active{% endif %}">
-        <div class="s-name" data-en="Stage 5" data-ta="நிலை 5" data-hi="चरण 5">Stage 5</div>
-        <div class="s-egfr">&lt; 15</div>
-        <div style="font-size:.65rem;margin-top:.2rem;color:#7f1d1d" data-en="Failure" data-ta="சிறுநீரக செயலிழப்பு" data-hi="विफलता">Failure</div>
-      </div>
-    </div>
-    <div class="egfr-detail">
-      <div>
-        <div style="font-size:.75rem;color:var(--muted);margin-bottom:.2rem"
-             data-en="Calculated eGFR" data-ta="கணக்கிடப்பட்ட eGFR" data-hi="गणना की गई eGFR">Calculated eGFR</div>
-        <div class="egfr-val">{% if egfr %}{{ egfr }} <span style="font-size:1rem;font-weight:500">mL/min</span>{% else %}Unable to calculate{% endif %}</div>
-      </div>
-      <div style="text-align:right">
-        <div style="font-weight:700;font-size:.95rem">{{ stage_info.stage }}</div>
-        <div style="font-size:.82rem;color:var(--muted);margin-top:.2rem"
-             data-en="{{ stage_info.desc }}"
-             data-ta="{% if stage_info.stage == 'Stage 1' %}சிறுநீரகம் சாதாரணமாக செயல்படுகிறது{% elif stage_info.stage == 'Stage 2' %}லேசான சிறுநீரக சேதம். தொடர்ந்து கண்காணிக்கவும்{% elif stage_info.stage == 'Stage 3A' %}மிதமான சிறுநீரக சேதம். சிறுநீரக மருத்துவரை அணுகவும்{% elif stage_info.stage == 'Stage 3B' %}கடுமையான சிறுநீரக சேதம். சிகிச்சை தேவை{% elif stage_info.stage == 'Stage 4' %}தீவிர சிறுநீரக சேதம். சிகிச்சை தயாரிப்பு தேவை{% else %}சிறுநீரக செயலிழப்பு. டயாலிசிஸ் அல்லது மாற்று அறுவை சிகிச்சை தேவை{% endif %}"
-             data-hi="{% if stage_info.stage == 'Stage 1' %}किडनी सामान्य काम कर रही है{% elif stage_info.stage == 'Stage 2' %}हल्का नुकसान। नियमित जांच करें{% elif stage_info.stage == 'Stage 3A' %}मध्यम नुकसान। नेफ्रोलॉजिस्ट से मिलें{% elif stage_info.stage == 'Stage 3B' %}गंभीर नुकसान। उपचार जरूरी{% elif stage_info.stage == 'Stage 4' %}बहुत गंभीर। उपचार की तैयारी करें{% else %}किडनी फेलियर। डायलिसिस जरूरी{% endif %}">
-          {{ stage_info.desc }}
+    <!-- PATIENT INFORMATION -->
+    <div class="patient-info">
+        <div class="patient-box">
+            <label>Patient Name</label>
+            <strong>{{ patient_name }}</strong>
         </div>
-      </div>
-    </div>
-  </div>
 
-  <!-- 4. TIMELINE -->
-  <div class="card">
-    <div class="card-title"
-         data-en="🔮 Early Risk Prediction — When Might CKD Develop?"
-         data-ta="🔮 ஆரம்ப ஆபத்து கணிப்பு — CKD எப்போது வரலாம்?"
-         data-hi="🔮 प्रारंभिक जोखिम — CKD कब हो सकता है?">🔮 Early Risk Prediction — When Might CKD Develop?</div>
-    <div class="timeline-hero">
-      <div class="timeline-icon">
-        {% if timeline.urgency == 'routine' %}🟢{% elif timeline.urgency == 'monitor' %}🟡{% elif timeline.urgency == 'soon' %}🟠{% elif timeline.urgency == 'urgent' %}🔴{% else %}🚨{% endif %}
-      </div>
-      <div class="timeline-text">
-        <h3 data-en="{{ timeline.risk_level }} — {{ timeline.risk_pct }}%"
-            data-ta="{% if timeline.urgency == 'routine' %}மிகவும் குறைந்த ஆபத்து{% elif timeline.urgency == 'monitor' %}குறைந்த-மிதமான ஆபத்து{% elif timeline.urgency == 'soon' %}மிதமான ஆபத்து{% elif timeline.urgency == 'urgent' %}அதிக ஆபத்து{% else %}மிகவும் அதிக ஆபத்து{% endif %} — {{ timeline.risk_pct }}%"
-            data-hi="{% if timeline.urgency == 'routine' %}बहुत कम जोखिम{% elif timeline.urgency == 'monitor' %}कम-मध्यम जोखिम{% elif timeline.urgency == 'soon' %}मध्यम जोखिम{% elif timeline.urgency == 'urgent' %}उच्च जोखिम{% else %}बहुत उच्च जोखिम{% endif %} — {{ timeline.risk_pct }}%">
-          {{ timeline.risk_level }} — {{ timeline.risk_pct }}%
-        </h3>
-        <p data-en="{{ timeline.timeline }}"
-           data-ta="{% if timeline.urgency == 'routine' %}எதிர்காலத்தில் CKD வரும் வாய்ப்பு மிகவும் குறைவு{% elif timeline.urgency == 'monitor' %}12–24 மாதங்களில் CKD வரலாம்{% elif timeline.urgency == 'soon' %}8–12 மாதங்களில் CKD வரலாம்{% elif timeline.urgency == 'urgent' %}3–6 மாதங்களில் CKD வரலாம்{% else %}1–3 மாதங்களில் CKD வர வாய்ப்பு உள்ளது{% endif %}"
-           data-hi="{% if timeline.urgency == 'routine' %}भविष्य में CKD होने की संभावना बहुत कम{% elif timeline.urgency == 'monitor' %}12–24 महीनों में CKD हो सकता है{% elif timeline.urgency == 'soon' %}8–12 महीनों में CKD हो सकता है{% elif timeline.urgency == 'urgent' %}3–6 महीनों में CKD हो सकता है{% else %}1–3 महीनों में CKD होने की संभावना{% endif %}">
-          {{ timeline.timeline }}
+        <div class="patient-box">
+            <label>Age</label>
+            <strong>{{ age }}</strong>
+        </div>
+    </div>
+
+    <!-- MAIN RESULT -->
+    <div class="result-card {% if risk == 'High' %}result-high{% else %}result-low{% endif %}">
+        <div class="result-icon">
+            {% if risk == 'High' %}⚠️{% else %}✓{% endif %}
+        </div>
+
+        <div class="result-label">Prediction Result</div>
+        <h2>{{ result }}</h2>
+
+        <p>
+            This result is generated using the clinical parameters entered
+            into the CKD prediction system.
         </p>
-      </div>
+
+        <div class="risk-badge {% if risk == 'High' %}risk-high{% else %}risk-low{% endif %}">
+            Risk Level: {{ risk }}
+        </div>
     </div>
 
-    <div style="margin-top:1rem;">
-      <div style="display:flex;justify-content:space-between;font-size:.78rem;color:var(--muted);margin-bottom:.3rem">
-        <span data-en="CKD Risk Probability" data-ta="CKD ஆபத்து நிகழ்தகவு" data-hi="CKD जोखिम संभावना">CKD Risk Probability</span>
-        <span style="font-weight:700;color:var(--text)">{{ timeline.risk_pct }}%</span>
-      </div>
-      <div class="risk-meter-bar">
-        <div class="risk-meter-fill" id="riskFill" style="width:0%;background:{% if timeline.risk_pct < 20 %}#16a34a{% elif timeline.risk_pct < 40 %}#ca8a04{% elif timeline.risk_pct < 60 %}#ea580c{% elif timeline.risk_pct < 80 %}#dc2626{% else %}#991b1b{% endif %}"></div>
-      </div>
-      <div class="risk-labels">
-        <span data-en="Very Low" data-ta="மிகவும் குறைவு" data-hi="बहुत कम">Very Low</span>
-        <span data-en="Low" data-ta="குறைவு" data-hi="कम">Low</span>
-        <span data-en="Moderate" data-ta="மிதமான" data-hi="मध्यम">Moderate</span>
-        <span data-en="High" data-ta="அதிகம்" data-hi="उच्च">High</span>
-        <span data-en="Critical" data-ta="அவசர நிலை" data-hi="गंभीर">Critical</span>
-      </div>
+    <!-- METRICS -->
+    <div class="metrics-grid">
+        <div class="metric-card">
+            <div class="metric-icon">🎯</div>
+            <span>Prediction Confidence</span>
+            <h3>{{ confidence }}%</h3>
+        </div>
+
+        <div class="metric-card">
+            <div class="metric-icon">🤖</div>
+            <span>Model Accuracy</span>
+            <h3>{{ accuracy }}%</h3>
+        </div>
+
+        <div class="metric-card">
+            <div class="metric-icon">🩺</div>
+            <span>Risk Classification</span>
+            <h3>{{ risk }}</h3>
+        </div>
+
+        <div class="metric-card">
+            <div class="metric-icon">📊</div>
+            <span>CKD Probability</span>
+            <h3 class="probability-value">
+                {{ "%.2f"|format(ckd_probability|float) }}%
+            </h3>
+        </div>
     </div>
 
-    <div style="margin-top:1rem;padding:1rem;background:var(--bg);border-radius:10px;">
-      <div style="font-size:.75rem;color:var(--muted);margin-bottom:.4rem;font-weight:600;text-transform:uppercase;letter-spacing:.05em"
-           data-en="Estimated Timeline" data-ta="மதிப்பிடப்பட்ட கால அட்டவணை" data-hi="अनुमानित समयरेखा">Estimated Timeline</div>
-      <div style="font-size:1.2rem;font-weight:800;color:var(--text)">⏱ {{ timeline.months }}</div>
-      <div style="font-size:.83rem;color:var(--muted);margin-top:.4rem"
-           data-en="{{ timeline.advice }}"
-           data-ta="{% if timeline.urgency == 'routine' %}ஆரோக்கியமான வாழ்க்கை முறையை பராமரிக்கவும். வருடாந்திர சிறுநீரக பரிசோதனை பரிந்துரைக்கப்படுகிறது{% elif timeline.urgency == 'monitor' %}நெஃப்ரோலஜிஸ்ட் ஆலோசனை திட்டமிடவும். BP மற்றும் இரத்த சர்க்கரையை கடுமையாக கண்காணிக்கவும்{% elif timeline.urgency == 'soon' %}விரைவில் சிறுநீரக மருத்துவரை அணுகவும். உடனடியாக வாழ்க்கை முறை மாற்றங்களை தொடங்கவும்{% elif timeline.urgency == 'urgent' %}அவசர நெஃப்ரோலஜி பரிந்துரை தேவை. சிகிச்சை நெறிமுறையை தொடங்கவும்{% else %}உடனடி மருத்துவ கவனிப்பு தேவை. இன்றே சிறுநீரக மருத்துவரை தொடர்பு கொள்ளவும்{% endif %}"
-           data-hi="{% if timeline.urgency == 'routine' %}स्वस्थ जीवनशैली बनाए रखें। वार्षिक किडनी जांच की सलाह{% elif timeline.urgency == 'monitor' %}नेफ्रोलॉजिस्ट से सलाह लें। BP और शुगर की निगरानी करें{% elif timeline.urgency == 'soon' %}जल्द नेफ्रोलॉजिस्ट से मिलें। जीवनशैली में बदलाव करें{% elif timeline.urgency == 'urgent' %}तुरंत नेफ्रोलॉजी रेफरल जरूरी। उपचार शुरू करें{% else %}तत्काल चिकित्सा ध्यान जरूरी। आज ही डॉक्टर से मिलें{% endif %}">
-        {{ timeline.advice }}
-      </div>
+    <!-- CKD PROBABILITY -->
+    <section class="probability-card">
+        <div class="probability-header">
+            <div class="probability-icon">📈</div>
+            <div>
+                <h2>CKD Probability Assessment</h2>
+            </div>
+        </div>
+
+        <p class="probability-subtitle">
+            Model-estimated probability of CKD based on the current assessment inputs.
+        </p>
+
+        <div class="probability-main">
+            <div class="probability-number">
+                {{ "%.2f"|format(ckd_probability|float) }}%
+            </div>
+
+            <div class="probability-bar-container">
+                <div class="probability-track">
+                    <div
+                        class="probability-fill"
+                        style="width: {{ ckd_probability|default(0)|float }}%;"
+                    ></div>
+                </div>
+
+                <div class="probability-scale">
+                    <span>0% — Lower</span>
+                    <span>50% — Intermediate</span>
+                    <span>100% — Higher</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- MODULE 5 — eGFR + GFR STAGE -->
+    <section class="egfr-card">
+        <div class="egfr-header">
+            <div class="egfr-icon">🧬</div>
+            <div>
+                <h2>eGFR &amp; GFR Stage Assessment</h2>
+                <p>
+                    Estimated glomerular filtration rate based on age,
+                    gender and serum creatinine.
+                </p>
+            </div>
+        </div>
+
+        <div class="egfr-grid">
+
+            <div class="egfr-value-card">
+                <div class="egfr-label">Estimated GFR</div>
+
+                <div class="egfr-number">
+                    {% if egfr is defined and egfr is not none %}
+                        {{ egfr }}
+                    {% else %}
+                        N/A
+                    {% endif %}
+                </div>
+
+                <div class="egfr-unit">mL/min/1.73m²</div>
+            </div>
+
+            <div class="gfr-stage-card">
+                <div class="egfr-label">GFR Category</div>
+
+                <div class="gfr-stage">
+                    {{ gfr_stage|default("Not Available") }}
+                </div>
+
+                <div class="gfr-description">
+                    {% if gfr_stage == "G1" %}
+                        Normal or high
+                    {% elif gfr_stage == "G2" %}
+                        Mildly decreased
+                    {% elif gfr_stage == "G3a" %}
+                        Mild to moderately decreased
+                    {% elif gfr_stage == "G3b" %}
+                        Moderately to severely decreased
+                    {% elif gfr_stage == "G4" %}
+                        Severely decreased
+                    {% elif gfr_stage == "G5" %}
+                        Kidney failure range
+                    {% else %}
+                        GFR category unavailable
+                    {% endif %}
+                </div>
+            </div>
+
+        </div>
+
+        <div class="gfr-scale">
+            <div class="scale-title">GFR Category Reference</div>
+
+            <div class="scale-grid">
+                <div class="scale-item"><strong>G1</strong><span>≥ 90</span></div>
+                <div class="scale-item"><strong>G2</strong><span>60–89</span></div>
+                <div class="scale-item"><strong>G3a</strong><span>45–59</span></div>
+                <div class="scale-item"><strong>G3b</strong><span>30–44</span></div>
+                <div class="scale-item"><strong>G4</strong><span>15–29</span></div>
+                <div class="scale-item"><strong>G5</strong><span>&lt; 15</span></div>
+            </div>
+        </div>
+
+        <div class="egfr-note">
+            <strong>🩺 Clinical Interpretation</strong>
+            eGFR is an estimated measure of kidney filtration function.
+            The displayed GFR category is intended for clinical decision-support
+            and educational purposes. A CKD diagnosis should be determined by a
+            qualified healthcare professional using clinical history, laboratory
+            findings and persistence of abnormalities over time.
+        </div>
+    </section>
+
+    <!-- MODULE 7 — PDF REPORT + WHATSAPP SHARING -->
+    <section class="report-card">
+
+        <div class="report-header">
+            <div class="report-icon">📄</div>
+
+            <div>
+                <h2>Assessment Report &amp; Sharing</h2>
+            </div>
+        </div>
+
+        <p class="report-subtitle">
+            Generate a professional PDF report containing the assessment result,
+            CKD probability, eGFR, GFR category, clinical parameters,
+            recommendations and explainable-AI information.
+        </p>
+
+        {% if assessment_id %}
+        <div class="report-actions">
+
+            <a
+                href="{{ url_for('download_report', assessment_id=assessment_id) }}"
+                class="report-btn"
+            >
+                📄 Download PDF Report
+            </a>
+
+            <a
+                href="{{ url_for('whatsapp_report', assessment_id=assessment_id) }}"
+                class="whatsapp-btn"
+                target="_blank"
+                rel="noopener"
+            >
+                💬 Share via WhatsApp
+            </a>
+
+            <a
+                href="{{ url_for('download_report', assessment_id=assessment_id, lang='ta') }}"
+                class="report-btn"
+            >
+                📄 தமிழ் PDF
+            </a>
+
+            <a
+                href="{{ url_for('whatsapp_report', assessment_id=assessment_id, lang='ta') }}"
+                class="whatsapp-btn"
+                target="_blank"
+                rel="noopener"
+            >
+                💬 தமிழ் WhatsApp
+            </a>
+
+        </div>
+
+        <p class="report-help">
+            WhatsApp sharing opens a pre-filled assessment summary.
+            The PDF can be downloaded separately and attached in WhatsApp if required.
+        </p>
+
+        {% else %}
+        <p class="report-help">
+            Report generation is available after the assessment has been saved.
+        </p>
+        {% endif %}
+
+    </section>
+
+    <!-- CLINICAL DECISION SUPPORT -->
+    {% if recommendations %}
+    <section class="section-card">
+
+        <div class="section-header">
+            <div class="section-icon">🩺</div>
+
+            <div>
+                <h2>Clinical Decision Support</h2>
+                <p>
+                    Personalized recommendations based on the assessment result
+                    and recorded inputs
+                </p>
+            </div>
+        </div>
+
+        <div class="recommendation-grid">
+
+            {% for item in recommendations %}
+            <div class="recommendation-card">
+
+                <div class="recommendation-top">
+                    <div class="recommendation-icon">
+                        {% if item.priority == 'High' %}
+                            🚨
+                        {% elif item.priority == 'Important' %}
+                            ⚠️
+                        {% elif item.priority == 'Moderate' %}
+                            📋
+                        {% else %}
+                            💡
+                        {% endif %}
+                    </div>
+
+                    <span class="priority-badge">{{ item.priority }}</span>
+                </div>
+
+                <h3>{{ item.title }}</h3>
+                <p>{{ item.message }}</p>
+
+            </div>
+            {% endfor %}
+
+        </div>
+
+        {% if warnings %}
+        <div class="warning-box">
+            <strong>⚠ Important Considerations</strong>
+
+            {% for warning in warnings %}
+            <div>• {{ warning }}</div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+    </section>
+    {% endif %}
+
+    <!-- EXPLAINABLE AI -->
+    {% if explanations %}
+    <section class="xai-card">
+
+        <div class="xai-header">
+            <div class="xai-icon">🔎</div>
+
+            <div>
+                <h2>Why this prediction?</h2>
+            </div>
+        </div>
+
+        <p class="xai-subtitle">
+            Key clinical factors that had higher importance in the trained
+            machine learning model.
+        </p>
+
+        {% for item in explanations %}
+        <div class="factor">
+
+            <div class="factor-top">
+                <div class="factor-name">{{ item.name }}</div>
+                <div class="factor-score">{{ item.importance }}%</div>
+            </div>
+
+            <div class="progress-track">
+                <div
+                    class="progress-fill"
+                    style="width: {{ item.importance }}%;"
+                ></div>
+            </div>
+
+            <div class="factor-value">
+                Value: {{ item.value }}
+            </div>
+
+            <p class="factor-message">
+                {{ item.message }}
+            </p>
+
+        </div>
+        {% endfor %}
+
+        <div class="xai-disclaimer">
+            <strong>Explainable AI Notice:</strong>
+            This section explains which input factors were important to the
+            trained model for this assessment. It describes model behavior
+            and does not establish medical causation or replace professional diagnosis.
+        </div>
+
+    </section>
+    {% endif %}
+
+    <!-- KEY CLINICAL PARAMETERS -->
+    <section class="section-card">
+
+        <div class="section-header">
+            <div class="section-icon">🧪</div>
+
+            <div>
+                <h2>Key Clinical Parameters</h2>
+                <p>Parameters used by the machine learning model</p>
+            </div>
+        </div>
+
+        <div class="feature-grid">
+
+            <div class="feature-card">
+                <label>Specific Gravity</label>
+                <div class="value">{{ sg }}</div>
+            </div>
+
+            <div class="feature-card">
+                <label>Albumin</label>
+                <div class="value">{{ al }}</div>
+            </div>
+
+            <div class="feature-card">
+                <label>Hemoglobin</label>
+                <div class="value">{{ hemo }}</div>
+            </div>
+
+            <div class="feature-card">
+                <label>Red Blood Cell Count</label>
+                <div class="value">{{ rc }}</div>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- MEDICAL HISTORY -->
+    <section class="section-card">
+
+        <div class="section-header">
+            <div class="section-icon">📋</div>
+
+            <div>
+                <h2>Medical History Factors</h2>
+                <p>Clinical history parameters included in assessment</p>
+            </div>
+        </div>
+
+        <div class="clinical-grid">
+
+            <div class="clinical-item">
+                <h4>Hypertension</h4>
+                <div class="clinical-status">{{ htn }}</div>
+            </div>
+
+            <div class="clinical-item">
+                <h4>Diabetes Mellitus</h4>
+                <div class="clinical-status">{{ dm }}</div>
+            </div>
+
+            <div class="clinical-item">
+                <h4>Appetite</h4>
+                <div class="clinical-status">{{ appet }}</div>
+            </div>
+
+            <div class="clinical-item">
+                <h4>Pus Cell</h4>
+                <div class="clinical-status">{{ pc }}</div>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- MEDICAL DISCLAIMER -->
+    <div class="notice">
+        <strong>Clinical Decision Support Notice</strong>
+        This application provides a machine learning based risk assessment
+        and rule-based decision-support recommendations for educational purposes.
+        The prediction, eGFR estimate and recommendations should not be considered
+        as a final medical diagnosis and should not replace professional clinical evaluation.
     </div>
 
-    <span class="urgency-badge urgency-{{ timeline.urgency }}"
-          data-en="{% if timeline.urgency == 'routine' %}✅ Routine Monitoring{% elif timeline.urgency == 'monitor' %}👀 Active Monitoring{% elif timeline.urgency == 'soon' %}⚠️ Consult Soon{% elif timeline.urgency == 'urgent' %}🚨 Urgent Action{% else %}🆘 Critical — Act Now{% endif %}"
-          data-ta="{% if timeline.urgency == 'routine' %}✅ வழக்கமான கண்காணிப்பு{% elif timeline.urgency == 'monitor' %}👀 செயலில் கண்காணிப்பு{% elif timeline.urgency == 'soon' %}⚠️ விரைவில் ஆலோசிக்கவும்{% elif timeline.urgency == 'urgent' %}🚨 அவசர நடவடிக்கை{% else %}🆘 அவசர நிலை — இப்போதே செயல்படுங்கள்{% endif %}"
-          data-hi="{% if timeline.urgency == 'routine' %}✅ नियमित निगरानी{% elif timeline.urgency == 'monitor' %}👀 सक्रिय निगरानी{% elif timeline.urgency == 'soon' %}⚠️ जल्द परामर्श{% elif timeline.urgency == 'urgent' %}🚨 तुरंत कार्रवाई{% else %}🆘 गंभीर — अभी कार्य करें{% endif %}">
-      {% if timeline.urgency == 'routine' %}✅ Routine Monitoring{% elif timeline.urgency == 'monitor' %}👀 Active Monitoring{% elif timeline.urgency == 'soon' %}⚠️ Consult Soon{% elif timeline.urgency == 'urgent' %}🚨 Urgent Action{% else %}🆘 Critical — Act Now{% endif %}
-    </span>
-  </div>
+    <!-- ACTION BUTTONS -->
+    <div class="actions">
 
-  <!-- 5. RECOMMENDATIONS -->
-  <div class="card">
-    <div class="card-title"
-         data-en="💊 Personalized Recommendations"
-         data-ta="💊 தனிப்பயன் பரிந்துரைகள்"
-         data-hi="💊 व्यक्तिगत सिफारिशें">💊 Personalized Recommendations</div>
-    <ul class="rec-list">
-      {% for rec in recommendations %}
-      <li>
-        <span class="rec-num {% if is_ckd %}ckd-num{% else %}ok-num{% endif %}">{{ loop.index }}</span>
-        {{ rec }}
-      </li>
-      {% endfor %}
-    </ul>
-  </div>
+        <a
+            href="{{ url_for('predict') }}"
+            class="action-btn action-primary"
+        >
+            + New Prediction
+        </a>
 
-  <!-- 6. WHATSAPP SHARE CARD -->
-  <div class="wa-card">
-    <div class="wa-card-text">
-      <h3 data-en="📱 Share Report on WhatsApp" data-ta="📱 WhatsApp-ல் அறிக்கையை பகிரவும்" data-hi="📱 WhatsApp पर रिपोर्ट शेयर करें">📱 Share Report on WhatsApp</h3>
-      <p data-en="Send this prediction report to your doctor or family member instantly"
-         data-ta="இந்த கணிப்பு அறிக்கையை உங்கள் மருத்துவர் அல்லது குடும்பத்தினரிடம் உடனடியாக அனுப்பவும்"
-         data-hi="इस रिपोर्ट को अपने डॉक्टर या परिवार को तुरंत भेजें">
-        Send this prediction report to your doctor or family member instantly
-      </p>
+        {% if patient_name %}
+        <a
+            href="{{ url_for('patient_risk_trend', patient_name=patient_name) }}"
+            class="action-btn action-trend"
+        >
+            📈 View Patient Trend
+        </a>
+        {% endif %}
+
+        <a
+            href="{{ url_for('home') }}"
+            class="action-btn action-outline"
+        >
+            ← Back to Home
+        </a>
+
     </div>
-    <a class="btn-wa-big" href="#" onclick="shareWhatsApp(); return false;">
-      <span style="font-size:1.2rem">💬</span>
-      <span data-en="Share on WhatsApp" data-ta="WhatsApp-ல் பகிர்" data-hi="WhatsApp पर शेयर करें">Share on WhatsApp</span>
-    </a>
-  </div>
 
-  <!-- 7. INPUT PARAMETERS SUMMARY -->
-  <div class="card">
-    <div class="card-title"
-         data-en="📋 Input Parameters Summary"
-         data-ta="📋 உள்ளீட்டு அளவுரு சுருக்கம்"
-         data-hi="📋 इनपुट पैरामीटर सारांश">📋 Input Parameters Summary</div>
-    <table class="sum-table">
-      <tr>
-        <td data-en="Age" data-ta="வயது" data-hi="उम्र">Age</td><td><b>{{ form_data.age }} yrs</b></td>
-        <td data-en="Blood Pressure" data-ta="இரத்த அழுத்தம்" data-hi="रक्तचाप">Blood Pressure</td><td><b>{{ form_data.bp }} mmHg</b></td>
-        <td data-en="Specific Gravity" data-ta="குறிப்பிட்ட ஈர்ப்பு" data-hi="विशिष्ट गुरुत्व">Specific Gravity</td><td><b>{{ form_data.sg }}</b></td>
-      </tr>
-      <tr>
-        <td data-en="Albumin" data-ta="அல்புமின்" data-hi="एल्बुमिन">Albumin</td><td><b>{{ form_data.al }}</b></td>
-        <td data-en="Sugar" data-ta="சர்க்கரை" data-hi="शुगर">Sugar</td><td><b>{{ form_data.su }}</b></td>
-        <td data-en="Red Blood Cells" data-ta="சிவப்பணுக்கள்" data-hi="लाल रक्त कोशिकाएं">Red Blood Cells</td><td><b>{{ form_data.rbc }}</b></td>
-      </tr>
-      <tr>
-        <td data-en="Pus Cell" data-ta="சீழ் செல்" data-hi="मवाद कोशिका">Pus Cell</td><td><b>{{ form_data.pc }}</b></td>
-        <td data-en="Pus Cell Clumps" data-ta="சீழ் செல் கட்டிகள்" data-hi="मवाद कोशिका समूह">Pus Cell Clumps</td><td><b>{{ form_data.pcc }}</b></td>
-        <td data-en="Bacteria" data-ta="பாக்டீரியா" data-hi="बैक्टीरिया">Bacteria</td><td><b>{{ form_data.ba }}</b></td>
-      </tr>
-      <tr>
-        <td data-en="Blood Glucose" data-ta="இரத்த சர்க்கரை" data-hi="रक्त शर्करा">Blood Glucose</td><td><b>{{ form_data.bgr }} mgs/dl</b></td>
-        <td data-en="Blood Urea" data-ta="இரத்த யூரியா" data-hi="रक्त यूरिया">Blood Urea</td><td><b>{{ form_data.bu }} mgs/dl</b></td>
-        <td data-en="Serum Creatinine" data-ta="சீரம் கிரியேட்டினின்" data-hi="सीरम क्रिएटिनिन">Serum Creatinine</td><td><b>{{ form_data.sc }} mgs/dl</b></td>
-      </tr>
-      <tr>
-        <td data-en="Sodium" data-ta="சோடியம்" data-hi="सोडियम">Sodium</td><td><b>{{ form_data.sod }} mEq/L</b></td>
-        <td data-en="Potassium" data-ta="பொட்டாசியம்" data-hi="पोटेशियम">Potassium</td><td><b>{{ form_data.pot }} mEq/L</b></td>
-        <td data-en="Hemoglobin" data-ta="ஹீமோகுளோபின்" data-hi="हीमोग्लोबिन">Hemoglobin</td><td><b>{{ form_data.hemo }} gms</b></td>
-      </tr>
-      <tr>
-        <td data-en="Hypertension" data-ta="உயர் இரத்த அழுத்தம்" data-hi="उच्च रक्तचाप">Hypertension</td><td><b>{{ form_data.htn }}</b></td>
-        <td data-en="Diabetes" data-ta="நீரிழிவு நோய்" data-hi="मधुमेह">Diabetes</td><td><b>{{ form_data.dm }}</b></td>
-        <td data-en="Appetite" data-ta="பசி" data-hi="भूख">Appetite</td><td><b>{{ form_data.appet }}</b></td>
-      </tr>
-    </table>
-  </div>
+</main>
 
-  <!-- 8. REPORT FOOTER -->
-  <div class="report-card">
-    <div class="report-meta">
-      <p>📄 <b data-en="Report ID:" data-ta="அறிக்கை ID:" data-hi="रिपोर्ट ID:">Report ID:</b> CKD-{{ range(10000,99999)|random }}</p>
-      <p>🕐 <b data-en="Generated:" data-ta="உருவாக்கப்பட்டது:" data-hi="उत्पन्न:">Generated:</b> <span id="genTime"></span></p>
-      <p>🤖 <b>Model:</b> Random Forest | eGFR: MDRD Formula | Risk: XGBoost Probability</p>
-      <p class="disc" data-en="This report is for informational purposes only and must not replace professional medical advice."
-         data-ta="இந்த அறிக்கை தகவல் நோக்கங்களுக்கு மட்டுமே. தொழில்முறை மருத்துவ ஆலோசனைக்கு மாற்றாக இருக்கக்கூடாது."
-         data-hi="यह रिपोर्ट केवल सूचनात्मक उद्देश्यों के लिए है। पेशेवर चिकित्सा सलाह का विकल्प नहीं है।">
-        This report is for informational purposes only and must not replace professional medical advice.
-      </p>
-    </div>
-  </div>
-
-  <!-- ACTIONS -->
-  <div class="actions">
-    <a href="/predict-page" class="btn-sec" data-en="↺ New Prediction" data-ta="↺ புதிய கணிப்பு" data-hi="↺ नई भविष्यवाणी">↺ New Prediction</a>
-    <button class="btn-pri" onclick="window.print()" data-en="⬇ Download PDF" data-ta="⬇ PDF பதிவிறக்கு" data-hi="⬇ PDF डाउनलोड">⬇ Download PDF</button>
-    <a href="/" class="btn-sec" data-en="← Back to Home" data-ta="← முகப்பு திரும்பு" data-hi="← होम वापस">← Back to Home</a>
-  </div>
-
-</div>
-
-<script>
-  // ── Set timestamp ──────────────────────────────────────────────
-  document.getElementById('genTime').textContent = new Date().toLocaleString();
-
-  // ── Animate risk bar ──────────────────────────────────────────
-  setTimeout(() => {
-    document.getElementById('riskFill').style.width = '{{ timeline.risk_pct }}%';
-  }, 300);
-
-  // ── LANGUAGE SWITCHER ─────────────────────────────────────────
-  let currentLang = 'en';
-
-  function setLang(lang) {
-    currentLang = lang;
-
-    // Update active button
-    ['en','ta','hi'].forEach(l => {
-      document.getElementById('btn-' + l).classList.toggle('active', l === lang);
-    });
-
-    // Update font for body
-    if (lang === 'ta') {
-      document.body.style.fontFamily = "'Noto Sans Tamil', 'Inter', sans-serif";
-    } else if (lang === 'hi') {
-      document.body.style.fontFamily = "'Noto Sans Devanagari', 'Inter', sans-serif";
-    } else {
-      document.body.style.fontFamily = "'Inter', sans-serif";
-    }
-
-    // Translate all elements with data-{lang} attributes
-    document.querySelectorAll('[data-' + lang + ']').forEach(el => {
-      const val = el.getAttribute('data-' + lang);
-      if (val) el.textContent = val;
-    });
-
-    // Update anchor hrefs too
-    document.querySelectorAll('a[data-' + lang + ']').forEach(el => {
-      el.textContent = el.getAttribute('data-' + lang);
-    });
-  }
-
-  // ── WHATSAPP SHARE ────────────────────────────────────────────
-  function shareWhatsApp() {
-    const result   = "{{ prediction }}";
-    const stage    = "{{ stage_info.stage }}";
-    const egfr     = "{{ egfr if egfr else 'N/A' }}";
-    const timeline = "{{ timeline.months }}";
-    const risk     = "{{ timeline.risk_pct }}";
-    const advice   = "{{ timeline.advice }}";
-
-    let msg = '';
-
-    if (currentLang === 'ta') {
-      msg = `🏥 *CKDPredict - சிறுநீரக நோய் பரிசோதனை அறிக்கை*\n\n` +
-            `📋 *முடிவு:* ${result === 'CKD Detected' || result.includes('CKD Detected') ? '⚠️ சிறுநீரக நோய் கண்டறியப்பட்டது' : '✅ சிறுநீரக நோய் இல்லை'}\n` +
-            `🔬 *eGFR மதிப்பு:* ${egfr} mL/min\n` +
-            `🏥 *நோய் நிலை:* ${stage}\n` +
-            `⏱ *மதிப்பிடப்பட்ட காலம்:* ${timeline}\n` +
-            `📊 *ஆபத்து சதவீதம்:* ${risk}%\n\n` +
-            `💊 *பரிந்துரை:* ${advice}\n\n` +
-            `⚠️ இது தகவல் நோக்கத்திற்காக மட்டுமே. மருத்துவரை அணுகவும்.\n\n` +
-            `🌐 CKDPredict - AI சிறுநீரக நோய் கணிப்பு அமைப்பு`;
-    } else if (currentLang === 'hi') {
-      msg = `🏥 *CKDPredict - किडनी रोग जांच रिपोर्ट*\n\n` +
-            `📋 *परिणाम:* ${result === 'CKD Detected' || result.includes('CKD Detected') ? '⚠️ किडनी रोग पाया गया' : '✅ किडनी रोग नहीं मिला'}\n` +
-            `🔬 *eGFR मूल्य:* ${egfr} mL/min\n` +
-            `🏥 *CKD चरण:* ${stage}\n` +
-            `⏱ *अनुमानित समय:* ${timeline}\n` +
-            `📊 *जोखिम प्रतिशत:* ${risk}%\n\n` +
-            `💊 *सलाह:* ${advice}\n\n` +
-            `⚠️ यह केवल सूचनात्मक उद्देश्य के लिए है। डॉक्टर से मिलें।\n\n` +
-            `🌐 CKDPredict - AI किडनी रोग भविष्यवाणी प्रणाली`;
-    } else {
-      msg = `🏥 *CKDPredict - Kidney Disease Report*\n\n` +
-            `📋 *Result:* ${result}\n` +
-            `🔬 *eGFR Value:* ${egfr} mL/min\n` +
-            `🏥 *CKD Stage:* ${stage}\n` +
-            `⏱ *Estimated Timeline:* ${timeline}\n` +
-            `📊 *Risk Percentage:* ${risk}%\n\n` +
-            `💊 *Advice:* ${advice}\n\n` +
-            `⚠️ This is for informational purposes only. Consult a doctor.\n\n` +
-            `🌐 CKDPredict - AI Kidney Disease Prediction System`;
-    }
-
-    const encoded = encodeURIComponent(msg);
-    window.open('https://wa.me/?text=' + encoded, '_blank');
-  }
-</script>
+<footer>
+    © 2026 CKDPredict • AI-Powered Kidney Disease Risk Assessment
+</footer>
 
 </body>
 </html>

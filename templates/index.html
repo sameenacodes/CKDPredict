@@ -37,12 +37,12 @@
       font-size: .82rem; font-weight: 500; cursor: pointer;
       background: var(--white); color: var(--muted);
       font-family: 'Inter', sans-serif; transition: all .2s;
+      /* IMPORTANT: type=button prevents form submission on click */
     }
     .tab:hover { border-color: var(--teal); color: var(--teal); }
     .tab.active { background: var(--teal); color: #fff; border-color: var(--teal); }
     .section { display: none; padding: 1.5rem; }
-    .section.active { display: block; animation: fadeIn .2s ease; }
-    @keyframes fadeIn { from{opacity:0;transform:translateY(6px)} to{opacity:1;transform:translateY(0)} }
+    .section.active { display: block; }
     .fields { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.2rem; }
     @media(max-width:700px){ .fields{ grid-template-columns:1fr; } }
     @media(min-width:701px) and (max-width:900px){ .fields{ grid-template-columns:repeat(2,1fr); } }
@@ -104,6 +104,7 @@
 <div class="card-wrap">
   <div class="card">
     <div class="tabs">
+      <!-- type="button" is CRITICAL — prevents tab clicks from submitting form -->
       <button type="button" class="tab active" onclick="switchTab(0)" id="tab-0">👤 Demographics</button>
       <button type="button" class="tab" onclick="switchTab(1)" id="tab-1">❤️ Vital Signs</button>
       <button type="button" class="tab" onclick="switchTab(2)" id="tab-2">🧪 Urine Analysis</button>
@@ -112,15 +113,16 @@
       <button type="button" class="tab" onclick="switchTab(5)" id="tab-5">📋 Medical History</button>
     </div>
 
-    <!-- PLAIN HTML FORM — submits directly to /predict via POST -->
-    <form method="POST" action="/predict">
+    <!-- Single form — all fields always present in DOM even when tab hidden -->
+    <!-- Hidden fields ensure ALL values are always submitted -->
+    <form method="POST" action="/predict" id="mainForm">
 
       <!-- TAB 0: DEMOGRAPHICS -->
       <div class="section active" id="sec-0">
         <div class="fields" style="grid-template-columns:1fr;max-width:280px">
           <div class="field">
             <label>Age (years) <span class="norm">Normal: N/A</span></label>
-            <input type="number" name="age" value="50" min="1" max="120"/>
+            <input type="number" name="age" id="age" value="50" min="1" max="120"/>
             <span class="hint">Patient age in years</span>
           </div>
         </div>
@@ -131,7 +133,7 @@
         <div class="fields" style="grid-template-columns:1fr;max-width:280px">
           <div class="field">
             <label>Blood Pressure (mm/Hg) <span class="norm">Normal: 80-120</span></label>
-            <input type="number" name="bp" value="80" min="50" max="200"/>
+            <input type="number" name="bp" id="bp" value="80" min="50" max="200"/>
             <span class="hint">Diastolic blood pressure</span>
           </div>
         </div>
@@ -142,23 +144,23 @@
         <div class="fields">
           <div class="field">
             <label>Specific Gravity <span class="norm">Normal: 1.010-1.025</span></label>
-            <input type="number" name="sg" step="0.001" value="1.020" min="1.000" max="1.030"/>
+            <input type="number" name="sg" id="sg" step="0.001" value="1.020" min="1.000" max="1.030"/>
             <span class="hint">Urine specific gravity</span>
           </div>
           <div class="field">
             <label>Albumin <span class="norm">Normal: 0-1</span></label>
-            <input type="number" name="al" value="0" min="0" max="5"/>
+            <input type="number" name="al" id="al" value="0" min="0" max="5"/>
             <span class="hint">Albumin in urine (0-5 scale)</span>
           </div>
           <div class="field">
             <label>Sugar <span class="norm">Normal: 0</span></label>
-            <input type="number" name="su" value="0" min="0" max="5"/>
+            <input type="number" name="su" id="su" value="0" min="0" max="5"/>
             <span class="hint">Sugar in urine (0-5 scale)</span>
           </div>
           <div class="field">
             <label>Red Blood Cells <span class="norm">Normal: Normal</span></label>
             <div class="sel-wrap">
-              <select name="rbc">
+              <select name="rbc" id="rbc">
                 <option value="normal" selected>Normal</option>
                 <option value="abnormal">Abnormal</option>
               </select>
@@ -168,7 +170,7 @@
           <div class="field">
             <label>Pus Cell <span class="norm">Normal: Normal</span></label>
             <div class="sel-wrap">
-              <select name="pc">
+              <select name="pc" id="pc">
                 <option value="normal" selected>Normal</option>
                 <option value="abnormal">Abnormal</option>
               </select>
@@ -178,7 +180,7 @@
           <div class="field">
             <label>Pus Cell Clumps <span class="norm">Normal: Not Present</span></label>
             <div class="sel-wrap">
-              <select name="pcc">
+              <select name="pcc" id="pcc">
                 <option value="notpresent" selected>Not Present</option>
                 <option value="present">Present</option>
               </select>
@@ -188,7 +190,7 @@
           <div class="field">
             <label>Bacteria <span class="norm">Normal: Not Present</span></label>
             <div class="sel-wrap">
-              <select name="ba">
+              <select name="ba" id="ba">
                 <option value="notpresent" selected>Not Present</option>
                 <option value="present">Present</option>
               </select>
@@ -203,32 +205,32 @@
         <div class="fields">
           <div class="field">
             <label>Blood Glucose Random (mgs/dl) <span class="norm">Normal: 70-140</span></label>
-            <input type="number" name="bgr" value="100" min="50" max="500"/>
+            <input type="number" name="bgr" id="bgr" value="100" min="50" max="500"/>
             <span class="hint">Random blood glucose level</span>
           </div>
           <div class="field">
             <label>Blood Urea (mgs/dl) <span class="norm">Normal: 7-20</span></label>
-            <input type="number" name="bu" value="40" min="1" max="400"/>
+            <input type="number" name="bu" id="bu" value="40" min="1" max="400"/>
             <span class="hint">Blood urea nitrogen level</span>
           </div>
           <div class="field">
             <label>Serum Creatinine (mgs/dl) <span class="norm">Normal: 0.7-1.2</span></label>
-            <input type="number" name="sc" step="0.1" value="1" min="0.1" max="20"/>
+            <input type="number" name="sc" id="sc" step="0.1" value="1" min="0.1" max="20"/>
             <span class="hint">Key CKD indicator</span>
           </div>
           <div class="field">
             <label>Sodium (mEq/L) <span class="norm">Normal: 135-145</span></label>
-            <input type="number" name="sod" value="140" min="100" max="170"/>
+            <input type="number" name="sod" id="sod" value="140" min="100" max="170"/>
             <span class="hint">Blood sodium level</span>
           </div>
           <div class="field">
             <label>Potassium (mEq/L) <span class="norm">Normal: 3.5-5.0</span></label>
-            <input type="number" name="pot" step="0.1" value="4" min="1" max="10"/>
+            <input type="number" name="pot" id="pot" step="0.1" value="4" min="1" max="10"/>
             <span class="hint">Blood potassium level</span>
           </div>
           <div class="field">
             <label>Hemoglobin (gms) <span class="norm">Normal: 12-17</span></label>
-            <input type="number" name="hemo" step="0.1" value="14" min="1" max="20"/>
+            <input type="number" name="hemo" id="hemo" step="0.1" value="14" min="1" max="20"/>
             <span class="hint">Blood hemoglobin level</span>
           </div>
         </div>
@@ -239,17 +241,17 @@
         <div class="fields">
           <div class="field">
             <label>Packed Cell Volume <span class="norm">Normal: 36-48</span></label>
-            <input type="number" name="pcv" value="42" min="10" max="60"/>
+            <input type="number" name="pcv" id="pcv" value="42" min="10" max="60"/>
             <span class="hint">Percentage of blood volume occupied by RBCs</span>
           </div>
           <div class="field">
             <label>White Blood Cell Count (cells/cumm) <span class="norm">Normal: 4000-11000</span></label>
-            <input type="number" name="wc" value="7500" min="1000" max="30000"/>
+            <input type="number" name="wc" id="wc" value="7500" min="1000" max="30000"/>
             <span class="hint">Total white blood cell count</span>
           </div>
           <div class="field">
             <label>Red Blood Cell Count (millions/cmm) <span class="norm">Normal: 4.5-5.5</span></label>
-            <input type="number" name="rc" step="0.1" value="5" min="1" max="8"/>
+            <input type="number" name="rc" id="rc" step="0.1" value="5" min="1" max="8"/>
             <span class="hint">Total red blood cell count</span>
           </div>
         </div>
@@ -261,7 +263,7 @@
           <div class="field">
             <label>Hypertension <span class="norm">Normal: No</span></label>
             <div class="sel-wrap">
-              <select name="htn">
+              <select name="htn" id="htn">
                 <option value="no" selected>No</option>
                 <option value="yes">Yes</option>
               </select>
@@ -271,7 +273,7 @@
           <div class="field">
             <label>Diabetes Mellitus <span class="norm">Normal: No</span></label>
             <div class="sel-wrap">
-              <select name="dm">
+              <select name="dm" id="dm">
                 <option value="no" selected>No</option>
                 <option value="yes">Yes</option>
               </select>
@@ -281,7 +283,7 @@
           <div class="field">
             <label>Coronary Artery Disease <span class="norm">Normal: No</span></label>
             <div class="sel-wrap">
-              <select name="cad">
+              <select name="cad" id="cad">
                 <option value="no" selected>No</option>
                 <option value="yes">Yes</option>
               </select>
@@ -291,7 +293,7 @@
           <div class="field">
             <label>Appetite <span class="norm">Normal: Good</span></label>
             <div class="sel-wrap">
-              <select name="appet">
+              <select name="appet" id="appet">
                 <option value="good" selected>Good</option>
                 <option value="poor">Poor</option>
               </select>
@@ -301,7 +303,7 @@
           <div class="field">
             <label>Pedal Edema <span class="norm">Normal: No</span></label>
             <div class="sel-wrap">
-              <select name="pe">
+              <select name="pe" id="pe">
                 <option value="no" selected>No</option>
                 <option value="yes">Yes</option>
               </select>
@@ -311,7 +313,7 @@
           <div class="field">
             <label>Anemia <span class="norm">Normal: No</span></label>
             <div class="sel-wrap">
-              <select name="ane">
+              <select name="ane" id="ane">
                 <option value="no" selected>No</option>
                 <option value="yes">Yes</option>
               </select>
@@ -321,9 +323,10 @@
         </div>
       </div>
 
+      <!-- FOOTER -->
       <div class="form-footer">
         <button type="button" class="btn-reset" onclick="resetForm()">↺ Reset</button>
-        <button type="submit" class="btn-predict">⚡ Get Prediction</button>
+        <button type="submit" class="btn-predict" id="submitBtn">⚡ Get Prediction</button>
       </div>
 
     </form>
@@ -343,17 +346,52 @@
 </div>
 
 <script>
+  // Switch tabs — type="button" on tab buttons prevents form submit
   function switchTab(n) {
-    document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
-    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    for (var i = 0; i < 6; i++) {
+      document.getElementById('sec-' + i).classList.remove('active');
+      document.getElementById('tab-' + i).classList.remove('active');
+    }
     document.getElementById('sec-' + n).classList.add('active');
     document.getElementById('tab-' + n).classList.add('active');
   }
+
+  // Reset all fields to default values
   function resetForm() {
-    const nums = {age:50,bp:80,sg:1.020,al:0,su:0,bgr:100,bu:40,sc:1,sod:140,pot:4,hemo:14,pcv:42,wc:7500,rc:5};
-    Object.entries(nums).forEach(([k,v]) => { const el = document.querySelector('[name='+k+']'); if(el) el.value=v; });
-    ['rbc','pc','pcc','ba','htn','dm','cad','appet','pe','ane'].forEach(k => { const el = document.querySelector('[name='+k+']'); if(el) el.selectedIndex=0; });
+    document.getElementById('age').value   = '50';
+    document.getElementById('bp').value    = '80';
+    document.getElementById('sg').value    = '1.020';
+    document.getElementById('al').value    = '0';
+    document.getElementById('su').value    = '0';
+    document.getElementById('bgr').value   = '100';
+    document.getElementById('bu').value    = '40';
+    document.getElementById('sc').value    = '1';
+    document.getElementById('sod').value   = '140';
+    document.getElementById('pot').value   = '4';
+    document.getElementById('hemo').value  = '14';
+    document.getElementById('pcv').value   = '42';
+    document.getElementById('wc').value    = '7500';
+    document.getElementById('rc').value    = '5';
+    document.getElementById('rbc').value   = 'normal';
+    document.getElementById('pc').value    = 'normal';
+    document.getElementById('pcc').value   = 'notpresent';
+    document.getElementById('ba').value    = 'notpresent';
+    document.getElementById('htn').value   = 'no';
+    document.getElementById('dm').value    = 'no';
+    document.getElementById('cad').value   = 'no';
+    document.getElementById('appet').value = 'good';
+    document.getElementById('pe').value    = 'no';
+    document.getElementById('ane').value   = 'no';
   }
+
+  // Verify form submits correctly — debug helper
+  document.getElementById('mainForm').addEventListener('submit', function(e) {
+    var btn = document.getElementById('submitBtn');
+    btn.textContent = '⏳ Processing...';
+    btn.disabled = true;
+    // Allow form to submit naturally
+    return true;
+  });
 </script>
 </body>
 </html>

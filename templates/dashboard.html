@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Patient History Dashboard | CKD Prediction System</title>
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box;font-family:Arial,Helvetica,sans-serif}
+        body{background:#f4f4f4;color:#222}
+        .header{background:#111;color:#fff;padding:22px 7%;display:flex;justify-content:space-between;align-items:center;border-bottom:4px solid #333}
+        .header h1{font-size:25px}.header p{color:#ccc;margin-top:5px;font-size:14px}
+        .back-btn,.progress-btn{display:inline-block;text-decoration:none;border-radius:5px;font-weight:bold}
+        .back-btn{background:#fff;color:#111;padding:10px 18px;border:2px solid #fff}.back-btn:hover{background:#111;color:#fff}
+        .container{width:92%;margin:30px auto}.summary-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:20px;margin-bottom:30px}
+        .summary-card,.table-section{background:#fff;border:1px solid #ccc;border-radius:8px;box-shadow:0 2px 8px rgba(0,0,0,.08)}
+        .summary-card{padding:22px}.summary-card h3{color:#555;font-size:14px;margin-bottom:10px}.number{font-size:30px;font-weight:bold;color:#111}
+        .table-section{padding:25px}.table-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:22px;flex-wrap:wrap;gap:15px}.table-header h2{font-size:22px}
+        .search-box{padding:10px 15px;border:1px solid #999;border-radius:5px;width:280px;font-size:14px}.table-wrapper{overflow-x:auto}
+        table{width:100%;border-collapse:collapse;min-width:1350px}th{background:#111;color:#fff;padding:14px 10px;text-align:left;font-size:13px;white-space:nowrap}td{padding:13px 10px;border-bottom:1px solid #ddd;font-size:13px}tr:hover{background:#f5f5f5}
+        .assessment-id{font-weight:bold}.status{padding:6px 10px;border-radius:4px;font-size:12px;font-weight:bold;display:inline-block}.ckd{background:#222;color:#fff}.normal{background:#e8e8e8;color:#111;border:1px solid #aaa}
+        .progress-btn{background:#111;color:#fff;padding:8px 12px;font-size:12px;white-space:nowrap}.progress-btn:hover{background:#444}.empty-state{text-align:center;padding:70px 20px;color:#666}.empty-state h2{color:#222;margin-bottom:12px}.empty-state a{display:inline-block;margin-top:20px;background:#111;color:#fff;text-decoration:none;padding:12px 20px;border-radius:5px}.footer{text-align:center;padding:25px;color:#666;font-size:13px}
+        @media(max-width:700px){.header{flex-direction:column;align-items:flex-start;gap:15px}.search-box{width:100%}.table-header{align-items:stretch}}
+    </style>
+</head>
+<body>
+<div class="header"><div><h1>CKD Prediction System</h1><p>Patient Assessment History and Progress Tracking</p></div><a href="/predict-page" class="back-btn">← New Prediction</a></div>
+<div class="container">
+    <div class="summary-grid">
+        <div class="summary-card"><h3>TOTAL ASSESSMENTS</h3><div class="number">{{ records|length }}</div></div>
+        <div class="summary-card"><h3>CKD DETECTED</h3><div class="number">{{ records | selectattr("is_ckd", "equalto", 1) | list | length }}</div></div>
+        <div class="summary-card"><h3>NO CKD DETECTED</h3><div class="number">{{ records | selectattr("is_ckd", "equalto", 0) | list | length }}</div></div>
+        <div class="summary-card"><h3>PHASE 2 FEATURE</h3><div class="number" style="font-size:20px">PROGRESS TRACKING</div></div>
+    </div>
+    <div class="table-section">
+        <div class="table-header"><h2>Patient Assessment Records</h2><input type="text" id="searchInput" class="search-box" placeholder="Search patient name, prediction..." onkeyup="searchRecords()"></div>
+        {% if records and records|length > 0 %}
+        <div class="table-wrapper"><table id="recordsTable"><thead><tr><th>Assessment ID</th><th>Patient Name</th><th>Date & Time</th><th>Prediction</th><th>Confidence</th><th>eGFR</th><th>CKD Stage</th><th>Risk</th><th>Hemoglobin</th><th>Creatinine</th><th>Age</th><th>BP</th><th>Gender</th><th>Hypertension</th><th>Diabetes</th><th>Progress</th></tr></thead>
+        <tbody>{% for record in records %}<tr>
+            <td class="assessment-id">{{ record["assessment_id"] }}</td><td>{{ record["patient_name"] }}</td><td>{{ record["assessment_date"] }}</td>
+            <td>{% if record["is_ckd"] == 1 %}<span class="status ckd">CKD DETECTED</span>{% else %}<span class="status normal">NO CKD</span>{% endif %}</td>
+            <td>{{ record["confidence"] }}%</td><td>{{ record["egfr"] if record["egfr"] is not none else "N/A" }}</td><td>{{ record["ckd_stage"] }}</td><td>{{ record["risk_percentage"] }}%</td>
+            <td>{{ record["hemoglobin"] }}</td><td>{{ record["serum_creatinine"] }}</td><td>{{ record["age"] }}</td><td>{{ record["blood_pressure"] }}</td><td>{{ record["gender"] }}</td><td>{{ record["hypertension"] }}</td><td>{{ record["diabetes"] }}</td>
+            <td><a class="progress-btn" href="{{ url_for('patient_progress', patient_name=record['patient_name']) }}">View Progress</a></td>
+        </tr>{% endfor %}</tbody></table></div>
+        {% else %}<div class="empty-state"><h2>No Patient Records Available</h2><p>No predictions have been saved to the SQLite database yet.</p><a href="/predict-page">Create First Prediction</a></div>{% endif %}
+    </div>
+</div>
+<div class="footer">CKD Prediction System | Patient History Module | Progress Tracking | SQLite Database</div>
+<script>
+function searchRecords(){let input=document.getElementById('searchInput'),filter=input.value.toUpperCase(),table=document.getElementById('recordsTable');if(!table)return;let rows=table.getElementsByTagName('tr');for(let i=1;i<rows.length;i++){rows[i].style.display=rows[i].textContent.toUpperCase().indexOf(filter)>-1?'':'none';}}
+</script>
+</body>
+</html>

@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Patient Progress Analytics | CKD Prediction System</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+*{box-sizing:border-box;font-family:Arial,Helvetica,sans-serif}
+body{margin:0;background:#f4f4f4;color:#222}
+.header{background:#111;color:#fff;padding:22px 7%;display:flex;justify-content:space-between;align-items:center}
+.header h1{margin:0;font-size:25px}.header p{margin:6px 0 0;color:#ccc}
+.nav a{display:inline-block;background:#fff;color:#111;text-decoration:none;padding:10px 15px;border-radius:5px;font-weight:bold;margin-left:8px}
+.container{width:90%;max-width:1250px;margin:30px auto}
+.card{background:#fff;border:1px solid #ccc;border-radius:8px;padding:24px;margin-bottom:22px;box-shadow:0 2px 8px rgba(0,0,0,.08)}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:16px}
+.metric{border:1px solid #ccc;border-radius:7px;padding:18px;background:#fafafa}
+.metric h3{font-size:13px;color:#555;margin:0 0 10px}.value{font-size:25px;font-weight:bold}.sub{font-size:13px;color:#666;margin-top:8px}
+.status{display:inline-block;padding:10px 16px;border:2px solid #111;border-radius:5px;font-weight:bold}
+.status-worsening{background:#111;color:#fff}.status-improving{background:#fff;color:#111}.status-stable{background:#ddd;color:#111}.status-baseline{background:#fff;color:#111}
+.alert{border:1px solid #aaa;border-left:6px solid #111;border-radius:5px;padding:16px;margin:12px 0;background:#fafafa}
+.alert h3{margin:0 0 8px}.high{font-weight:bold}.moderate{}.low{}
+.chart-wrap{height:330px;position:relative}
+table{width:100%;border-collapse:collapse}
+th,td{border:1px solid #ddd;padding:11px;text-align:left}
+th{background:#111;color:#fff}tr:nth-child(even){background:#fafafa}
+.notice{border-left:4px solid #111;padding:16px;line-height:1.6;background:#fff}
+@media(max-width:700px){.header{flex-direction:column;align-items:flex-start}.nav a{margin:8px 5px 0 0}.chart-wrap{height:260px}}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div>
+    <h1>CKD Prediction System</h1>
+    <p>Phase 7 — Advanced Patient Analytics & Trend Alerts</p>
+  </div>
+  <div class="nav">
+    <a href="/dashboard">Patient History</a>
+    <a href="/predict-page">New Prediction</a>
+  </div>
+</div>
+
+<div class="container">
+
+  <div class="card">
+    <h2>{{ patient_name }} — Longitudinal Health Analytics</h2>
+    <p>This page compares historical patient assessments and identifies changes in kidney function, risk and CKD stage.</p>
+    <p>
+      {% if trend_analysis.overall_status == "Worsening" %}
+        <span class="status status-worsening">OVERALL TREND: WORSENING</span>
+      {% elif trend_analysis.overall_status == "Improving" %}
+        <span class="status status-improving">OVERALL TREND: IMPROVING</span>
+      {% elif trend_analysis.overall_status == "Baseline Established" %}
+        <span class="status status-baseline">BASELINE ESTABLISHED</span>
+      {% else %}
+        <span class="status status-stable">OVERALL TREND: {{ trend_analysis.overall_status|upper }}</span>
+      {% endif %}
+    </p>
+    <p>{{ trend_analysis.summary }}</p>
+  </div>
+
+  <div class="grid">
+    <div class="metric">
+      <h3>TOTAL ASSESSMENTS</h3>
+      <div class="value">{{ trend_analysis.total_assessments }}</div>
+    </div>
+
+    <div class="metric">
+      <h3>LATEST eGFR</h3>
+      <div class="value">{{ trend_analysis.latest_egfr if trend_analysis.latest_egfr is not none else 'N/A' }}</div>
+      {% if trend_analysis.available %}<div class="sub">Previous: {{ trend_analysis.previous_egfr }} | Change: {{ trend_analysis.egfr_change }}</div>{% endif %}
+    </div>
+
+    <div class="metric">
+      <h3>CURRENT RISK</h3>
+      <div class="value">{{ trend_analysis.latest_risk if trend_analysis.latest_risk is not none else 'N/A' }}{% if trend_analysis.latest_risk is not none %}%{% endif %}</div>
+      {% if trend_analysis.available %}<div class="sub">Previous: {{ trend_analysis.previous_risk }}% | Change: {{ trend_analysis.risk_change }}%</div>{% endif %}
+    </div>
+
+    <div class="metric">
+      <h3>CURRENT STAGE</h3>
+      <div class="value">{{ trend_analysis.latest_stage if trend_analysis.latest_stage is defined else 'N/A' }}</div>
+      {% if trend_analysis.available %}<div class="sub">Previous: {{ trend_analysis.previous_stage }}</div>{% endif %}
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Automatic Trend Analysis</h2>
+    {% if trend_analysis.available %}
+    <div class="grid">
+      <div class="metric">
+        <h3>KIDNEY FUNCTION (eGFR)</h3>
+        <div class="value">{{ trend_analysis.egfr_trend }}</div>
+      </div>
+      <div class="metric">
+        <h3>RISK CHANGE</h3>
+        <div class="value">{{ trend_analysis.risk_trend }}</div>
+      </div>
+      <div class="metric">
+        <h3>CKD STAGE CHANGE</h3>
+        <div class="value">{{ trend_analysis.stage_trend }}</div>
+      </div>
+    </div>
+    {% else %}
+      <div class="notice">
+        {{ trend_analysis.summary }} Add another assessment for this same patient to activate automatic trend comparison.
+      </div>
+    {% endif %}
+  </div>
+
+  <div class="card">
+    <h2>Automatic Deterioration Alerts</h2>
+    {% if trend_analysis.alerts %}
+      {% for alert in trend_analysis.alerts %}
+      <div class="alert {{ alert.severity|lower }}">
+        <h3>{{ alert.type }} — {{ alert.severity }} Alert</h3>
+        <p>{{ alert.message }}</p>
+      </div>
+      {% endfor %}
+    {% else %}
+      <div class="notice">
+        No significant deterioration alert was generated from the available comparison rules.
+      </div>
+    {% endif %}
+  </div>
+
+  <div class="card">
+    <h2>eGFR Trend</h2>
+    <div class="chart-wrap"><canvas id="egfrChart"></canvas></div>
+  </div>
+
+  <div class="card">
+    <h2>Risk Percentage Trend</h2>
+    <div class="chart-wrap"><canvas id="riskChart"></canvas></div>
+  </div>
+
+  <div class="card">
+    <h2>Assessment History</h2>
+    {% if records %}
+    <table>
+      <thead>
+        <tr>
+          <th>Date</th>
+          <th>Prediction</th>
+          <th>eGFR</th>
+          <th>CKD Stage</th>
+          <th>Risk</th>
+          <th>Review Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for record in records %}
+        <tr>
+          <td>{{ record.assessment_date }}</td>
+          <td>{{ record.prediction }}</td>
+          <td>{{ record.egfr }}</td>
+          <td>{{ record.ckd_stage }}</td>
+          <td>{{ record.risk_percentage }}%</td>
+          <td>{{ record.review_status or 'Pending Review' }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% else %}
+      <p>No assessment history found for this patient.</p>
+    {% endif %}
+  </div>
+
+  <div class="notice">
+    <b>Decision-Support Notice:</b> Trend analysis compares recorded assessments using predefined change rules.
+    It supports longitudinal review and does not replace professional medical interpretation.
+  </div>
+
+</div>
+
+<script>
+const labels = {{ labels|tojson }};
+const egfrValues = {{ egfr_values|tojson }};
+const riskValues = {{ risk_values|tojson }};
+
+new Chart(document.getElementById('egfrChart'), {
+    type: 'line',
+    data: {
+        labels: labels,
+        datasets: [{
+            label: 'eGFR',
+            data: egfrValues,
+            borderWidth: 2,
+            tension: 0.25,
+            fill: false
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: { y: { beginAtZero: true } }
+    }
+});
+
+new Chart(document.getElementById('riskChart'), {
+    type: 'line',
+    data: {
+        labels: labels,
+        datasets: [{
+            label: 'Risk Percentage',
+            data: riskValues,
+            borderWidth: 2,
+            tension: 0.25,
+            fill: false
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: { y: { beginAtZero: true, max: 100 } }
+    }
+});
+</script>
+
+</body>
+</html>

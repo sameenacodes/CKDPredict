@@ -1,7 +1,9 @@
-setuptools
-Flask
-numpy
-pandas
-scikit-learn
-xgboost
-gunicorn
+Flask==3.1.2
+pandas==2.3.3
+numpy==2.3.4
+scikit-learn==1.8.0
+xgboost==3.2.0
+joblib==1.5.2
+reportlab==5.0.1
+openpyxl==3.1.5
+gunicorn==26.2.0
