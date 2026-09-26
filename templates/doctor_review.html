@@ -1,95 +1,455 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Professional Review | CKD Prediction System</title>
-<style>
-*{box-sizing:border-box;font-family:Arial,Helvetica,sans-serif}
-body{margin:0;background:#f4f4f4;color:#222}
-.header{background:#111;color:#fff;padding:22px 7%}
-.header h1{margin:0;font-size:25px}.header p{margin:6px 0 0;color:#ccc}
-.container{width:90%;max-width:900px;margin:30px auto}
-.card{background:#fff;border:1px solid #ccc;border-radius:8px;padding:25px;margin-bottom:22px;box-shadow:0 2px 8px rgba(0,0,0,.08)}
-.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:15px}
-.item{border:1px solid #ddd;border-radius:6px;padding:14px;background:#fafafa}
-.item b{display:block;margin-bottom:6px}
-label{display:block;font-weight:bold;margin:15px 0 7px}
-input,select,textarea{width:100%;padding:12px;border:1px solid #aaa;border-radius:5px;font-size:15px}
-textarea{min-height:130px;resize:vertical}
-button{margin-top:20px;background:#111;color:#fff;border:none;padding:13px 22px;border-radius:5px;font-size:15px;font-weight:bold;cursor:pointer}
-.status{padding:12px;border:1px solid #777;border-radius:5px;display:inline-block;font-weight:bold}
-.reviewed{background:#111;color:#fff}.pending{background:#fff;color:#111}
-.notice{border-left:4px solid #111;padding:15px;background:#fff;line-height:1.6}
-.back{display:inline-block;margin-top:15px;color:#111;font-weight:bold}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Doctor Review | CKD Prediction System</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            font-family: Arial, Helvetica, sans-serif;
+        }
+
+        body {
+            margin: 0;
+            background: #f4f7f8;
+            color: #222;
+        }
+
+        .header {
+            background: #111;
+            color: #fff;
+            padding: 22px 7%;
+        }
+
+        .header h1 {
+            margin: 0;
+            font-size: 25px;
+        }
+
+        .header p {
+            margin: 6px 0 0;
+            color: #ccc;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 950px;
+            margin: 30px auto;
+        }
+
+        .card {
+            background: #fff;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            padding: 25px;
+            margin-bottom: 22px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        }
+
+        .card h2 {
+            margin-top: 0;
+            margin-bottom: 20px;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(
+                auto-fit,
+                minmax(220px, 1fr)
+            );
+            gap: 15px;
+        }
+
+        .item {
+            border: 1px solid #ddd;
+            border-radius: 7px;
+            padding: 14px;
+            background: #fafafa;
+        }
+
+        .item b {
+            display: block;
+            margin-bottom: 7px;
+            color: #555;
+        }
+
+        label {
+            display: block;
+            font-weight: bold;
+            margin: 15px 0 7px;
+        }
+
+        input,
+        select,
+        textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #aaa;
+            border-radius: 5px;
+            font-size: 15px;
+        }
+
+        textarea {
+            min-height: 130px;
+            resize: vertical;
+        }
+
+        button {
+            margin-top: 20px;
+            background: #111;
+            color: #fff;
+            border: none;
+            padding: 13px 22px;
+            border-radius: 5px;
+            font-size: 15px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        button:hover {
+            opacity: 0.9;
+        }
+
+        .status {
+            padding: 12px 18px;
+            border: 1px solid #777;
+            border-radius: 5px;
+            display: inline-block;
+            font-weight: bold;
+        }
+
+        .reviewed {
+            background: #111;
+            color: #fff;
+        }
+
+        .pending {
+            background: #fff;
+            color: #111;
+        }
+
+        .notice {
+            border-left: 4px solid #111;
+            padding: 15px;
+            background: #fff;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+
+        .back {
+            display: inline-block;
+            margin-top: 5px;
+            color: #111;
+            font-weight: bold;
+            text-decoration: none;
+        }
+
+        .back:hover {
+            text-decoration: underline;
+        }
+
+        .review-box {
+            background: #f8f8f8;
+            border: 1px solid #ddd;
+            border-radius: 7px;
+            padding: 18px;
+        }
+
+        .review-box p {
+            line-height: 1.6;
+        }
+    </style>
 </head>
+
+
 <body>
-<div class="header">
-  <h1>CKD Prediction System</h1>
-  <p>Phase 6 — Professional Review & Feedback</p>
-</div>
 
-<div class="container">
-  <div class="card">
-    <h2>Assessment Summary</h2>
-    <div class="grid">
-      <div class="item"><b>Assessment ID</b>{{ record.assessment_id }}</div>
-      <div class="item"><b>Patient</b>{{ record.patient_name }}</div>
-      <div class="item"><b>ML Prediction</b>{{ record.prediction }}</div>
-      <div class="item"><b>Confidence</b>{{ record.confidence }}%</div>
-      <div class="item"><b>eGFR</b>{{ record.egfr }}</div>
-      <div class="item"><b>CKD Stage</b>{{ record.ckd_stage }}</div>
-      <div class="item"><b>Risk Level</b>{{ record.risk_percentage }}%</div>
-      <div class="item"><b>Assessment Date</b>{{ record.assessment_date }}</div>
+    <div class="header">
+
+        <h1>CKD Prediction System</h1>
+
+        <p>
+            Professional Doctor Review & Feedback
+        </p>
+
     </div>
-  </div>
 
-  <div class="card">
-    <h2>Review Status</h2>
-    <span class="status {% if record.review_status == 'Reviewed' %}reviewed{% else %}pending{% endif %}">
-      {{ record.review_status or 'Pending Review' }}
-    </span>
-  </div>
 
-  <div class="card">
-    <h2>Professional Review Form</h2>
-    <form method="POST" action="/submit-doctor-review/{{ record.assessment_id }}">
-      <label>Doctor / Reviewer Name</label>
-      <input type="text" name="doctor_name" value="{{ record.doctor_name or '' }}" required>
+    <div class="container">
 
-      <label>Review Decision</label>
-      <select name="doctor_decision" required>
-        <option value="">Select a decision</option>
-        <option value="Agree with Prediction" {% if record.doctor_decision == 'Agree with Prediction' %}selected{% endif %}>Agree with Prediction</option>
-        <option value="Disagree with Prediction" {% if record.doctor_decision == 'Disagree with Prediction' %}selected{% endif %}>Disagree with Prediction</option>
-        <option value="Further Tests Required" {% if record.doctor_decision == 'Further Tests Required' %}selected{% endif %}>Further Tests Required</option>
-      </select>
 
-      <label>Professional Remarks</label>
-      <textarea name="doctor_remarks" placeholder="Enter review observations or recommended follow-up...">{{ record.doctor_remarks or '' }}</textarea>
+        <!-- ========================================= -->
+        <!-- ASSESSMENT SUMMARY -->
+        <!-- ========================================= -->
 
-      <button type="submit">Submit Professional Review</button>
-    </form>
-  </div>
+        <div class="card">
 
-  {% if record.review_status == 'Reviewed' %}
-  <div class="card">
-    <h2>Latest Submitted Review</h2>
-    <p><b>Reviewer:</b> {{ record.doctor_name }}</p>
-    <p><b>Decision:</b> {{ record.doctor_decision }}</p>
-    <p><b>Remarks:</b> {{ record.doctor_remarks or 'No remarks provided' }}</p>
-    <p><b>Reviewed On:</b> {{ record.review_date }}</p>
-  </div>
-  {% endif %}
+            <h2>Assessment Summary</h2>
 
-  <div class="notice">
-    <b>Decision-Support Workflow:</b> The machine-learning system provides an assessment,
-    while this module records a separate professional review. The review is not generated by
-    the ML model and represents a documented human assessment.
-  </div>
+            <div class="grid">
 
-  <a class="back" href="/dashboard">← Back to Patient History</a>
-</div>
+                <div class="item">
+                    <b>Assessment ID</b>
+                    {{ patient.id }}
+                </div>
+
+                <div class="item">
+                    <b>Patient</b>
+                    {{ patient.patient_name }}
+                </div>
+
+                <div class="item">
+                    <b>Age</b>
+                    {{ patient.age }}
+                </div>
+
+                <div class="item">
+                    <b>Gender</b>
+                    {{ patient.gender or 'N/A' }}
+                </div>
+
+                <div class="item">
+                    <b>ML Prediction</b>
+                    {{ patient.prediction }}
+                </div>
+
+                <div class="item">
+                    <b>Risk Level</b>
+                    {{ patient.risk }}
+                </div>
+
+                <div class="item">
+                    <b>Model Confidence</b>
+                    {{ patient.confidence }}%
+                </div>
+
+                <div class="item">
+                    <b>CKD Probability</b>
+                    {{ patient.ckd_probability }}%
+                </div>
+
+                <div class="item">
+                    <b>Serum Creatinine</b>
+                    {{ patient.serum_creatinine or 'N/A' }}
+                </div>
+
+                <div class="item">
+                    <b>eGFR</b>
+                    {{ patient.egfr or 'N/A' }}
+                </div>
+
+                <div class="item">
+                    <b>GFR Stage</b>
+                    {{ patient.gfr_stage or 'N/A' }}
+                </div>
+
+                <div class="item">
+                    <b>Assessment Date</b>
+                    {{ patient.created_at }}
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- ========================================= -->
+        <!-- REVIEW STATUS -->
+        <!-- ========================================= -->
+
+        <div class="card">
+
+            <h2>Review Status</h2>
+
+            <span class="status
+                {% if patient.review_status == 'Reviewed' %}
+                    reviewed
+                {% else %}
+                    pending
+                {% endif %}
+            ">
+
+                {{ patient.review_status or 'Pending Review' }}
+
+            </span>
+
+        </div>
+
+
+        <!-- ========================================= -->
+        <!-- PROFESSIONAL REVIEW FORM -->
+        <!-- ========================================= -->
+
+        <div class="card">
+
+            <h2>Professional Review Form</h2>
+
+            <form
+                method="POST"
+                action="{{ url_for(
+                    'submit_doctor_review',
+                    assessment_id=patient.id
+                ) }}"
+            >
+
+                <label>
+                    Doctor / Reviewer Name
+                </label>
+
+                <input
+                    type="text"
+                    name="doctor_name"
+                    value="{{ patient.doctor_name or '' }}"
+                    placeholder="Enter doctor / reviewer name"
+                    required
+                >
+
+
+                <label>
+                    Review Decision
+                </label>
+
+                <select
+                    name="doctor_decision"
+                    required
+                >
+
+                    <option value="">
+                        Select a decision
+                    </option>
+
+                    <option
+                        value="Agree with Prediction"
+                        {% if patient.doctor_decision == 'Agree with Prediction' %}
+                            selected
+                        {% endif %}
+                    >
+                        Agree with Prediction
+                    </option>
+
+                    <option
+                        value="Disagree with Prediction"
+                        {% if patient.doctor_decision == 'Disagree with Prediction' %}
+                            selected
+                        {% endif %}
+                    >
+                        Disagree with Prediction
+                    </option>
+
+                    <option
+                        value="Further Tests Required"
+                        {% if patient.doctor_decision == 'Further Tests Required' %}
+                            selected
+                        {% endif %}
+                    >
+                        Further Tests Required
+                    </option>
+
+                </select>
+
+
+                <label>
+                    Professional Remarks
+                </label>
+
+                <textarea
+                    name="doctor_remarks"
+                    placeholder="Enter review observations or recommended follow-up..."
+                >{{ patient.doctor_remarks or '' }}</textarea>
+
+
+                <button type="submit">
+                    Submit Professional Review
+                </button>
+
+            </form>
+
+        </div>
+
+
+        <!-- ========================================= -->
+        <!-- LATEST REVIEW -->
+        <!-- ========================================= -->
+
+        {% if patient.review_status == 'Reviewed' %}
+
+        <div class="card">
+
+            <h2>Latest Submitted Review</h2>
+
+            <div class="review-box">
+
+                <p>
+                    <b>Reviewer:</b>
+                    {{ patient.doctor_name }}
+                </p>
+
+                <p>
+                    <b>Decision:</b>
+                    {{ patient.doctor_decision }}
+                </p>
+
+                <p>
+                    <b>Remarks:</b>
+                    {{ patient.doctor_remarks or 'No remarks provided' }}
+                </p>
+
+                <p>
+                    <b>Reviewed On:</b>
+                    {{ patient.review_date }}
+                </p>
+
+            </div>
+
+        </div>
+
+        {% endif %}
+
+
+        <!-- ========================================= -->
+        <!-- INFORMATION NOTICE -->
+        <!-- ========================================= -->
+
+        <div class="notice">
+
+            <b>Decision-Support Workflow:</b>
+
+            The machine-learning system provides an assessment,
+            while this module records a separate professional review.
+
+            The review is not generated by the ML model and represents
+            a documented human assessment.
+
+        </div>
+
+
+        <!-- ========================================= -->
+        <!-- BACK -->
+        <!-- ========================================= -->
+
+        <a
+            class="back"
+            href="{{ url_for('assessment', assessment_id=patient.id) }}"
+        >
+            ← Back to Assessment
+        </a>
+
+        &nbsp;&nbsp;
+
+        <a
+            class="back"
+            href="{{ url_for('patient_history') }}"
+        >
+            Back to Patient History
+        </a>
+
+
+    </div>
+
 </body>
+
 </html>

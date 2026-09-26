@@ -339,6 +339,11 @@ def create_database():
         "egfr": "REAL",
         "gfr_stage": "TEXT",
         "bp": "REAL",
+        "review_status": "TEXT",
+        "doctor_name": "TEXT",
+        "doctor_decision": "TEXT",
+        "doctor_remarks": "TEXT",
+        "review_date": "TEXT",
     }
 
     for column, column_type in migrations.items():
@@ -2491,6 +2496,123 @@ def assessment(
 
         patient=patient
 
+    )
+
+
+# ============================================================
+# DOCTOR REVIEW
+# ============================================================
+
+@app.route(
+    "/doctor-review/<int:assessment_id>"
+)
+def doctor_review(
+    assessment_id
+):
+
+    conn = get_db_connection()
+
+    record = conn.execute(
+        """
+        SELECT *
+
+        FROM patient_history
+
+        WHERE id = ?
+        """,
+        (
+            assessment_id,
+        )
+    ).fetchone()
+
+    conn.close()
+
+    if record is None:
+        return (
+            "Assessment not found.",
+            404
+        )
+
+    return render_template(
+        "doctor_review.html",
+        patient=record
+    )
+
+
+@app.route(
+    "/submit-doctor-review/<int:assessment_id>",
+    methods=["POST"]
+)
+def submit_doctor_review(
+    assessment_id
+):
+
+    doctor_name = request.form.get(
+        "doctor_name",
+        ""
+    ).strip()
+
+    doctor_decision = request.form.get(
+        "doctor_decision",
+        ""
+    ).strip()
+
+    doctor_remarks = request.form.get(
+        "doctor_remarks",
+        ""
+    ).strip()
+
+    allowed_decisions = [
+        "Agree with Prediction",
+        "Disagree with Prediction",
+        "Further Tests Required"
+    ]
+
+    if (
+        not doctor_name
+        or doctor_decision not in allowed_decisions
+    ):
+        return (
+            "Doctor/Reviewer name and a valid review decision are required.",
+            400
+        )
+
+    review_date = datetime.now().strftime(
+        "%Y-%m-%d %H:%M:%S"
+    )
+
+    conn = get_db_connection()
+
+    conn.execute(
+        """
+        UPDATE patient_history
+
+        SET review_status = ?,
+            doctor_name = ?,
+            doctor_decision = ?,
+            doctor_remarks = ?,
+            review_date = ?
+
+        WHERE id = ?
+        """,
+        (
+            "Reviewed",
+            doctor_name,
+            doctor_decision,
+            doctor_remarks,
+            review_date,
+            assessment_id
+        )
+    )
+
+    conn.commit()
+    conn.close()
+
+    return redirect(
+        url_for(
+            "doctor_review",
+            assessment_id=assessment_id
+        )
     )
 
 

@@ -1,690 +1,1185 @@
 <!DOCTYPE html>
+
 <html lang="en">
+
 <head>
+
     <meta charset="UTF-8">
+
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <title>CKDPredict | Assessment Details</title>
 
     <link
+
         href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+
         rel="stylesheet"
+
     >
 
     <style>
+
         * { margin: 0; padding: 0; box-sizing: border-box; }
 
         :root {
+
             --blue:#2563eb;
+
             --blue-dark:#1d4ed8;
+
             --blue-light:#eff6ff;
+
             --blue-soft:#dbeafe;
+
             --text:#172033;
+
             --muted:#6b7280;
+
             --border:#e5e7eb;
+
             --bg:#f8fafc;
+
             --white:#fff;
+
             --green:#16a34a;
+
             --green-light:#f0fdf4;
+
             --red:#dc2626;
+
             --red-light:#fef2f2;
+
             --purple:#7c3aed;
+
             --purple-light:#f5f3ff;
+
             --orange:#ea580c;
+
             --orange-light:#fff7ed;
+
         }
 
         body {
+
             font-family:"Inter",sans-serif;
+
             background:var(--bg);
+
             color:var(--text);
+
             min-height:100vh;
+
         }
 
         nav {
+
             height:74px;
+
             display:flex;
+
             align-items:center;
+
             justify-content:space-between;
+
             padding:0 7%;
+
             background:var(--white);
+
             border-bottom:1px solid var(--border);
+
             position:sticky;
+
             top:0;
+
             z-index:100;
+
         }
 
         .logo {
+
             display:flex;
+
             align-items:center;
+
             gap:10px;
+
             text-decoration:none;
+
         }
 
         .logo-icon {
+
             width:42px;
+
             height:42px;
+
             border-radius:12px;
+
             background:var(--blue);
+
             display:flex;
+
             align-items:center;
+
             justify-content:center;
+
             font-size:21px;
+
         }
 
         .logo-text {
+
             font-size:20px;
+
             font-weight:800;
+
             color:var(--text);
+
         }
 
         .logo-text span { color:var(--blue); }
 
         .nav-links {
+
             display:flex;
+
             gap:12px;
+
             align-items:center;
+
         }
 
         .nav-btn {
+
             text-decoration:none;
+
             padding:11px 18px;
+
             border-radius:9px;
+
             font-size:14px;
+
             font-weight:600;
+
         }
 
         .btn-outline {
+
             border:1px solid var(--border);
+
             color:var(--text);
+
             background:#fff;
+
         }
 
         .btn-outline:hover {
+
             border-color:var(--blue);
+
             color:var(--blue);
+
         }
 
         .btn-primary {
+
             background:var(--blue);
+
             color:#fff;
+
         }
 
         .btn-primary:hover { background:var(--blue-dark); }
 
         .container {
+
             width:92%;
+
             max-width:1180px;
+
             margin:auto;
+
             padding:45px 0 70px;
+
         }
 
         .page-title {
+
             text-align:center;
+
             margin-bottom:30px;
+
         }
 
         .small-title {
+
             color:var(--blue);
+
             font-size:13px;
+
             font-weight:700;
+
             text-transform:uppercase;
+
             letter-spacing:1.2px;
+
             margin-bottom:10px;
+
         }
 
         .page-title h1 {
+
             font-size:34px;
+
             font-weight:800;
+
             margin-bottom:9px;
+
         }
 
         .page-title p {
+
             color:var(--muted);
+
             font-size:14px;
+
         }
 
         .card {
+
             background:#fff;
+
             border:1px solid var(--border);
+
             border-radius:18px;
+
             padding:28px;
+
             margin-bottom:22px;
+
             box-shadow:0 8px 25px rgba(37,99,235,.04);
+
         }
 
         .card-header {
+
             display:flex;
+
             align-items:center;
+
             gap:12px;
+
             margin-bottom:22px;
+
         }
 
         .icon {
+
             width:44px;
+
             height:44px;
+
             border-radius:12px;
+
             background:var(--blue-light);
+
             display:flex;
+
             align-items:center;
+
             justify-content:center;
+
             font-size:21px;
+
         }
 
         .card-header h2 {
+
             font-size:20px;
+
             font-weight:800;
+
         }
 
         .card-header p {
+
             color:var(--muted);
+
             font-size:13px;
+
             margin-top:4px;
+
         }
 
         .patient-grid {
+
             display:grid;
+
             grid-template-columns:repeat(3,1fr);
+
             gap:15px;
+
         }
 
         .item {
+
             border:1px solid var(--border);
+
             border-radius:12px;
+
             padding:17px;
+
             background:#fcfdff;
+
         }
 
         .item label {
+
             display:block;
+
             color:var(--muted);
+
             font-size:11px;
+
             font-weight:700;
+
             text-transform:uppercase;
+
             margin-bottom:8px;
+
         }
 
         .item strong {
+
             font-size:16px;
+
             font-weight:800;
+
         }
 
         .result-box {
+
             text-align:center;
+
             padding:30px;
+
             border-radius:16px;
+
             border:1px solid var(--border);
+
         }
 
         .result-box.high { background:var(--red-light); }
+
         .result-box.low { background:var(--green-light); }
 
         .result-symbol {
+
             font-size:34px;
+
             margin-bottom:10px;
+
         }
 
         .result-box h2 {
+
             font-size:27px;
+
             font-weight:800;
+
             margin-bottom:10px;
+
         }
 
         .high h2 { color:var(--red); }
+
         .low h2 { color:var(--green); }
 
         .result-box p {
+
             color:var(--muted);
+
             font-size:13px;
+
         }
 
         .badge {
+
             display:inline-block;
+
             margin-top:15px;
+
             padding:8px 15px;
+
             border-radius:50px;
+
             font-size:12px;
+
             font-weight:800;
+
         }
 
         .badge-high { color:var(--red); background:#fff; }
+
         .badge-low { color:var(--green); background:#fff; }
 
         .metrics {
+
             display:grid;
+
             grid-template-columns:repeat(4,1fr);
+
             gap:15px;
+
         }
 
         .metric {
+
             text-align:center;
+
             border:1px solid var(--border);
+
             border-radius:13px;
+
             padding:20px;
+
         }
 
         .metric span {
+
             display:block;
+
             color:var(--muted);
+
             font-size:11px;
+
             font-weight:700;
+
             text-transform:uppercase;
+
             margin-bottom:8px;
+
         }
 
         .metric strong {
+
             font-size:25px;
+
             font-weight:800;
+
         }
 
         .purple { color:var(--purple); }
 
         .grid {
+
             display:grid;
+
             grid-template-columns:repeat(4,1fr);
+
             gap:15px;
+
         }
 
         .stage-grid {
+
             display:grid;
+
             grid-template-columns:1fr 1fr;
+
             gap:15px;
+
         }
 
         .stage-box {
+
             text-align:center;
+
             border:1px solid var(--border);
+
             border-radius:14px;
+
             padding:24px;
+
             background:#fcfdff;
+
         }
 
         .stage-number {
+
             font-size:36px;
+
             font-weight:800;
+
             color:var(--purple);
+
         }
 
         .stage-unit {
+
             color:var(--muted);
+
             font-size:12px;
+
             margin-top:5px;
+
         }
 
         .section-title {
+
             font-size:13px;
+
             font-weight:800;
+
             margin-bottom:12px;
+
         }
 
         .note {
+
             margin-top:18px;
+
             padding:15px 17px;
+
             border-radius:12px;
+
             background:var(--blue-light);
+
             border:1px solid var(--blue-soft);
+
             color:#1e3a8a;
+
             font-size:12px;
+
             line-height:1.65;
+
         }
 
         .actions {
+
             display:flex;
+
             justify-content:center;
+
             gap:13px;
+
             flex-wrap:wrap;
+
             margin-top:28px;
+
         }
 
         .action {
+
             text-decoration:none;
+
             padding:13px 21px;
+
             border-radius:10px;
+
             font-size:14px;
+
             font-weight:700;
+
         }
 
         .primary {
+
             background:var(--blue);
+
             color:#fff;
+
         }
 
         .primary:hover { background:var(--blue-dark); }
 
         .outline {
+
             background:#fff;
+
             color:var(--text);
+
             border:1px solid var(--border);
+
         }
 
         .outline:hover {
+
             border-color:var(--blue);
+
             color:var(--blue);
+
         }
 
         .trend {
+
             background:var(--purple-light);
+
             color:var(--purple);
+
             border:1px solid #ddd6fe;
+
         }
 
         footer {
+
             text-align:center;
+
             padding:30px;
+
             color:var(--muted);
+
             font-size:13px;
+
             background:#fff;
+
             border-top:1px solid var(--border);
+
         }
 
         @media(max-width:900px) {
+
             .patient-grid { grid-template-columns:repeat(2,1fr); }
+
             .metrics { grid-template-columns:repeat(2,1fr); }
+
             .grid { grid-template-columns:repeat(2,1fr); }
+
         }
 
         @media(max-width:650px) {
+
             nav { padding:0 5%; }
+
             .nav-btn { padding:9px 11px; font-size:12px; }
+
             .logo-text { font-size:17px; }
+
             .container { padding-top:30px; }
+
             .page-title h1 { font-size:27px; }
+
             .patient-grid,
+
             .metrics,
+
             .grid,
+
             .stage-grid { grid-template-columns:1fr; }
+
             .card { padding:20px; }
+
         }
+
+    
+        .doctor-review { background:#111827; color:#fff; border:1px solid #111827; }
+        .doctor-review:hover { background:#000; }
     </style>
+
 </head>
 
 <body>
 
 <nav>
+
     <a href="{{ url_for('home') }}" class="logo">
+
         <div class="logo-icon">🩺</div>
+
         <div class="logo-text">CKD<span>Predict</span></div>
+
     </a>
 
     <div class="nav-links">
+
         <a href="{{ url_for('home') }}" class="nav-btn btn-outline">Home</a>
+
         <a href="{{ url_for('predict') }}" class="nav-btn btn-primary">New Prediction</a>
+
     </div>
+
 </nav>
 
 <main class="container">
 
     <div class="page-title">
+
         <div class="small-title">Saved Assessment</div>
+
         <h1>Assessment Details</h1>
+
         <p>Previously recorded CKD prediction and clinical assessment</p>
+
     </div>
 
     <!-- PATIENT INFORMATION -->
+
     <section class="card">
+
         <div class="card-header">
+
             <div class="icon">👤</div>
+
             <div>
+
                 <h2>Patient Information</h2>
+
                 <p>Details stored with this assessment</p>
+
             </div>
+
         </div>
 
         <div class="patient-grid">
+
             <div class="item">
+
                 <label>Assessment ID</label>
+
                 <strong>#{{ patient['id'] }}</strong>
+
             </div>
 
             <div class="item">
+
                 <label>Patient Name</label>
+
                 <strong>{{ patient['patient_name'] }}</strong>
+
             </div>
 
             <div class="item">
+
                 <label>Age</label>
+
                 <strong>{{ patient['age'] }}</strong>
+
             </div>
 
             <div class="item">
+
                 <label>Gender</label>
+
                 <strong>{{ patient['gender']|default('Not recorded', true) }}</strong>
+
             </div>
 
             <div class="item">
+
                 <label>Assessment Date</label>
+
                 <strong>{{ patient['created_at']|default('Not recorded', true) }}</strong>
+
             </div>
 
             <div class="item">
+
                 <label>Serum Creatinine</label>
+
                 <strong>{{ patient['serum_creatinine']|default('Not recorded', true) }}</strong>
+
             </div>
+
         </div>
+
     </section>
 
     <!-- RESULT -->
+
     <section class="card">
+
         <div class="card-header">
+
             <div class="icon">🩺</div>
+
             <div>
+
                 <h2>Prediction Result</h2>
+
                 <p>Machine learning assessment stored for this patient</p>
+
             </div>
+
         </div>
 
         {% set is_high = patient['risk'] == 'High' %}
 
         <div class="result-box {% if is_high %}high{% else %}low{% endif %}">
+
             <div class="result-symbol">
+
                 {% if is_high %}⚠️{% else %}✓{% endif %}
+
             </div>
 
             <h2>{{ patient['prediction'] }}</h2>
 
             <p>
+
                 This result was generated from the clinical parameters
+
                 recorded during the assessment.
+
             </p>
 
             <span class="badge {% if is_high %}badge-high{% else %}badge-low{% endif %}">
+
                 Risk Level: {{ patient['risk'] }}
+
             </span>
+
         </div>
+
     </section>
 
     <!-- METRICS -->
+
     <section class="card">
+
         <div class="card-header">
+
             <div class="icon">📊</div>
+
             <div>
+
                 <h2>Assessment Metrics</h2>
+
                 <p>Model confidence and estimated CKD probability</p>
+
             </div>
+
         </div>
 
         <div class="metrics">
+
             <div class="metric">
+
                 <span>Prediction Confidence</span>
+
                 <strong>{{ patient['confidence'] }}%</strong>
+
             </div>
 
             <div class="metric">
+
                 <span>CKD Probability</span>
+
                 <strong class="purple">
+
                     {{ "%.2f"|format((patient['ckd_probability'] or 0)|float) }}%
+
                 </strong>
+
             </div>
 
             <div class="metric">
+
                 <span>eGFR</span>
+
                 <strong>
+
                     {% if patient['egfr'] is defined and patient['egfr'] is not none %}
+
                         {{ patient['egfr'] }}
+
                     {% else %}
+
                         N/A
+
                     {% endif %}
+
                 </strong>
+
             </div>
 
             <div class="metric">
+
                 <span>GFR Category</span>
+
                 <strong class="purple">
+
                     {{ patient['gfr_stage']|default('N/A', true) }}
+
                 </strong>
+
             </div>
+
         </div>
+
     </section>
 
     <!-- CLINICAL PARAMETERS -->
+
     <section class="card">
+
         <div class="card-header">
+
             <div class="icon">🧪</div>
+
             <div>
+
                 <h2>Clinical Parameters</h2>
+
                 <p>Important values recorded for this assessment</p>
+
             </div>
+
         </div>
 
         <div class="grid">
+
             <div class="item">
+
                 <label>Specific Gravity</label>
+
                 <strong>{{ patient['sg'] }}</strong>
+
             </div>
 
             <div class="item">
+
                 <label>Albumin</label>
+
                 <strong>{{ patient['al'] }}</strong>
+
             </div>
 
             <div class="item">
+
                 <label>Hemoglobin</label>
+
                 <strong>{{ patient['hemo'] }}</strong>
+
             </div>
 
             <div class="item">
+
                 <label>RBC Count</label>
+
                 <strong>{{ patient['rc'] }}</strong>
+
             </div>
+
         </div>
+
     </section>
 
     <!-- MEDICAL HISTORY -->
+
     <section class="card">
+
         <div class="card-header">
+
             <div class="icon">📋</div>
+
             <div>
+
                 <h2>Medical History</h2>
+
                 <p>Clinical history factors recorded in the assessment</p>
+
             </div>
+
         </div>
 
         <div class="grid">
+
             <div class="item">
+
                 <label>Hypertension</label>
+
                 <strong>{{ patient['htn'] }}</strong>
+
             </div>
 
             <div class="item">
+
                 <label>Diabetes Mellitus</label>
+
                 <strong>{{ patient['dm'] }}</strong>
+
             </div>
 
             <div class="item">
+
                 <label>Appetite</label>
+
                 <strong>{{ patient['appet'] }}</strong>
+
             </div>
 
             <div class="item">
+
                 <label>Pus Cell</label>
+
                 <strong>{{ patient['pc'] }}</strong>
+
             </div>
+
         </div>
+
     </section>
 
     <!-- eGFR -->
+
     <section class="card">
+
         <div class="card-header">
+
             <div class="icon">🧬</div>
+
             <div>
+
                 <h2>eGFR &amp; GFR Stage</h2>
+
                 <p>Kidney filtration estimate stored with the assessment</p>
+
             </div>
+
         </div>
 
         <div class="stage-grid">
+
             <div class="stage-box">
+
                 <div class="section-title">Estimated GFR</div>
+
                 <div class="stage-number">
+
                     {% if patient['egfr'] is defined and patient['egfr'] is not none %}
+
                         {{ patient['egfr'] }}
+
                     {% else %}
+
                         N/A
+
                     {% endif %}
+
                 </div>
+
                 <div class="stage-unit">mL/min/1.73m²</div>
+
             </div>
 
             <div class="stage-box">
+
                 <div class="section-title">GFR Category</div>
+
                 <div class="stage-number">
+
                     {{ patient['gfr_stage']|default('N/A', true) }}
+
                 </div>
+
                 <div class="stage-unit">
+
                     {% if patient['gfr_stage'] == 'G1' %}
+
                         Normal or high
+
                     {% elif patient['gfr_stage'] == 'G2' %}
+
                         Mildly decreased
+
                     {% elif patient['gfr_stage'] == 'G3a' %}
+
                         Mild to moderately decreased
+
                     {% elif patient['gfr_stage'] == 'G3b' %}
+
                         Moderately to severely decreased
+
                     {% elif patient['gfr_stage'] == 'G4' %}
+
                         Severely decreased
+
                     {% elif patient['gfr_stage'] == 'G5' %}
+
                         Kidney failure range
+
                     {% else %}
+
                         Category unavailable
+
                     {% endif %}
+
                 </div>
+
             </div>
+
         </div>
 
         <div class="note">
+
             <strong>🩺 Clinical Note</strong>
+
             eGFR is an estimated measure of kidney filtration. This stored
+
             value is intended for clinical decision-support and educational
+
             purposes and should not be treated as a standalone medical diagnosis.
+
         </div>
+
     </section>
 
     <!-- ACTIONS -->
+
     <div class="actions">
 
         <a
+
             href="{{ url_for('download_report', assessment_id=patient['id']) }}"
+
             class="action primary"
+
         >
+
             📄 Download PDF
+
         </a>
 
         <a
+
             href="{{ url_for('whatsapp_report', assessment_id=patient['id']) }}"
+
             class="action primary"
+
             target="_blank"
+
             rel="noopener"
+
         >
+
             💬 Share via WhatsApp
+
         </a>
 
         <a
-            href="{{ url_for('patient_risk_trend', patient_name=patient['patient_name']) }}"
-            class="action trend"
+            href="{{ url_for('doctor_review', assessment_id=patient['id']) }}"
+            class="action doctor-review"
         >
+            🩺 Doctor Review
+        </a>
+
+        <a
+
+            href="{{ url_for('patient_risk_trend', patient_name=patient['patient_name']) }}"
+
+            class="action trend"
+
+        >
+
             📈 View Patient Trend
+
         </a>
 
         <a href="{{ url_for('home') }}" class="action outline">
+
             ← Back to Home
+
         </a>
 
     </div>
@@ -692,8 +1187,11 @@
 </main>
 
 <footer>
+
     © 2026 CKDPredict • AI-Powered Kidney Disease Risk Assessment
+
 </footer>
 
 </body>
+
 </html>
